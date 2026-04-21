@@ -16,7 +16,7 @@ const COURSE_DESCRIPTIONS = {
 export default function CourseDetailPageExact() {
   const params = useParams();
   const id = params?.id || "course";
-  
+
   const courseTitle = id.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   const courseDesc = COURSE_DESCRIPTIONS[id] || `Dive deep into the ultimate ${courseTitle.toLowerCase()} masterclass designed to take you from a complete beginner to a certified professional. Complete all modules and pass the final assessment to unlock your completion certificate.`;
 
@@ -28,24 +28,24 @@ export default function CourseDetailPageExact() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-28 pb-24 font-sans text-[#111827]">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-24 text-[#111827]">
       <div className="w-[90%] mx-auto">
-        
+
         {/* Navigation */}
-        <Link href="/tech-wizard" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-[#0096ff] transition-colors mb-10">
-          <FaArrowLeft /> Back to Skill Pipeline
+        <Link href="/tech-wizard" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-[#0096ff] transition-colors mt-[100px] mb-10">
+          <FaArrowLeft /> Back to Tech-Wizard
         </Link>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          
+
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-10">
             {/* Header Hero */}
             <div className="bg-white rounded-[2rem] p-10 md:p-14 border border-gray-100 shadow-sm relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#0096ff] opacity-[0.03] rounded-bl-full" />
-              
+
               <div className="relative z-10">
-                <span className="inline-block px-3 py-1 bg-orange-100 text-[#cc5500] text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
+                <span className="inline-block px-3 py-1 bg-orange-100 text-[#cc5500] text-[15px] font-black uppercase tracking-widest rounded-md mb-6">
                   PREMIUM COURSE
                 </span>
                 <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
@@ -54,7 +54,7 @@ export default function CourseDetailPageExact() {
                 <p className="text-gray-500 text-lg leading-relaxed max-w-2xl whitespace-pre-line">
                   {courseDesc}
                 </p>
-                
+
                 <div className="flex flex-wrap gap-8 mt-10 border-t border-gray-100 pt-8">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0096ff]">
@@ -80,41 +80,41 @@ export default function CourseDetailPageExact() {
 
             {/* Modules Section */}
             <div>
-               <h2 className="text-2xl font-black mb-6">Course Modules</h2>
-               <div className="space-y-4">
-                 {modules.map((mod) => (
-                   <div 
-                     key={mod.num} 
-                     className="flex items-center justify-between p-6 rounded-2xl border bg-white border-gray-200 shadow-sm hover:border-[#0096ff] hover:shadow-md transition-all cursor-pointer"
-                   >
-                     <div className="flex items-center gap-6">
-                        <div className={`w-14 h-14 rounded-full flex items-center justify-center border font-bold ${mod.completed ? "bg-green-50 text-green-600 border-green-200" : "bg-white border-gray-200 text-[#111827]"}`}>
-                          {mod.completed ? <FaCheckCircle size={20} /> : `0${mod.num}`}
-                        </div>
-                        <div>
-                          <p className="text-[10px] uppercase font-bold text-gray-400 tracking-[0.2em] mb-1">Module {mod.num}</p>
-                          <h3 className="font-bold text-lg">{mod.title}</h3>
-                        </div>
-                     </div>
-                     <div>
-                     </div>
-                   </div>
-                 ))}
-               </div>
+              <h2 className="text-2xl font-black mb-6">Course Modules</h2>
+              <div className="space-y-4">
+                {modules.map((mod) => (
+                  <div
+                    key={mod.num}
+                    className="flex items-center justify-between p-6 rounded-2xl border bg-white border-gray-200 shadow-sm hover:border-[#0096ff] hover:shadow-md transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center gap-6">
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center border font-bold ${mod.completed ? "bg-green-50 text-green-600 border-green-200" : "bg-white border-gray-200 text-[#111827]"}`}>
+                        {mod.completed ? <FaCheckCircle size={20} /> : `0${mod.num}`}
+                      </div>
+                      <div>
+                        <p className="text-[10px] uppercase font-bold text-gray-400 tracking-[0.2em] mb-1">Module {mod.num}</p>
+                        <h3 className="font-bold text-lg">{mod.title}</h3>
+                      </div>
+                    </div>
+                    <div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-8">
             <div className="bg-[#111827] text-white rounded-[2rem] p-8 shadow-xl">
-              <h3 className="font-bold text-[1.5rem] mb-4 tracking-tight text-[#ff0000]">Access Required</h3>
-              <p className="text-sm text-gray-400 mb-8 leading-relaxed">
+              <h3 className="font-bold text-[1.6rem] mb-4 tracking-tight text-[#ff0000]">Access Required</h3>
+              <p className="text-[15px] text-gray-400 mb-8 leading-relaxed">
                 Please register for the SMCS Student Portal to access your student profile, track your progress, and take your monthly assessments.
               </p>
-              
-              <Link 
+
+              <Link
                 href="/smcs/student/register"
-                className="block w-full bg-[#0096ff] hover:bg-[#00BFFF] py-4 rounded-xl font-black uppercase tracking-widest text-[10px] text-center transition-all shadow-[0_8px_20px_rgba(0,150,255,0.3)] active:scale-95"
+                className="block w-full bg-[#0096ff] hover:bg-[#00BFFF] py-4 rounded-xl font-black uppercase tracking-widest text-[12px] text-center transition-all shadow-[0_8px_20px_rgba(0,150,255,0.3)] active:scale-95"
               >
                 Register Now →
               </Link>

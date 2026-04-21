@@ -51,8 +51,8 @@ const AcademicStructure = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 border-b border-slate-100 pb-10">
           <div className="space-y-3">
             <div className="inline-flex items-center gap-3">
-               <span className="w-8 h-[2px] bg-[#cc5500]"></span>
-               <p className="text-[#cc5500] text-[10px] md:text-[12px] font-black tracking-[0.3em] uppercase font-[var(--inter-font)]">
+              <span className="w-8 h-[2px] bg-[#cc5500]"></span>
+              <p className="text-[#cc5500] text-[10px] md:text-[12px] font-black tracking-[0.3em] uppercase font-[var(--inter-font)]">
                 Academic Excellence
               </p>
             </div>
@@ -61,15 +61,6 @@ const AcademicStructure = () => {
               <span className="text-[#0096ff] italic">Every Milestone</span>
             </h2>
           </div>
-          <a
-            href="#"
-            className="group text-[#001011] font-black text-[10px] md:text-xs tracking-[0.3em] mt-8 md:mt-0 flex items-center gap-3 uppercase font-[var(--inter-font)]"
-          >
-            Explore FULL CURRICULUM
-            <span className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center transition-all group-hover:bg-[#001011] group-hover:text-white group-hover:border-[#001011]">
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </a>
         </div>
 
         {/* Grid Section */}

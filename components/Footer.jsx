@@ -11,7 +11,7 @@ const Footer = () => {
           {/* Brand & Social Section */}
           <div className="flex flex-col items-start gap-6 max-w-sm">
             <div className="flex items-center gap-3">
-                <img src="/images/logo.png" alt="St Mary Logo" className="w-16 h-16 object-contain" />
+              <img src="/images/logo.png" alt="St Mary Logo" className="w-16 h-16 object-contain" />
             </div>
 
             <p className="text-gray-400 text-[15px] leading-relaxed pr-4">
@@ -44,28 +44,28 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-4 text-[13px] font-medium">
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
+                  <a href="/about" className="hover:text-blue-400 transition-colors">
                     About
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    News & Events
+                  <a href="/tech-wizard" className="hover:text-blue-400 transition-colors">
+                    Tech Wizard
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Alumni
+                  <a href="/staff" className="hover:text-blue-400 transition-colors">
+                    Staff Portal
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Contact Us
+                  <a href="/gallery" className="hover:text-blue-400 transition-colors">
+                    Gallery
+                  </a>
+                </li>
+                <li>
+                  <a href="/contact" className="hover:text-blue-400 transition-colors">
+                    Contact
                   </a>
                 </li>
               </ul>
@@ -78,28 +78,23 @@ const Footer = () => {
               </h4>
               <ul className="flex flex-col gap-4 text-[13px] font-medium">
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Early Years
+                  <a href="/classes/nursery" className="hover:text-blue-400 transition-colors">
+                    Nursery
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Primary School
+                  <a href="/classes/basic-1-6" className="hover:text-blue-400 transition-colors">
+                    Basic 1-6
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Secondary
+                  <a href="/classes/junior-secondary" className="hover:text-blue-400 transition-colors">
+                    Junior Secondary
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Curriculum
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-400 transition-colors">
-                    Admission
+                  <a href="/classes/senior-secondary" className="hover:text-blue-400 transition-colors">
+                    Senior Secondary
                   </a>
                 </li>
               </ul>
@@ -161,7 +156,7 @@ const Footer = () => {
               Terms of Use
             </a>
             <a
-              href="#"
+              href="/admin/register"
               className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-red-600 hover:text-red-500 transition-colors"
             >
               Portal Login

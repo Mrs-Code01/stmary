@@ -10,24 +10,24 @@ import { Eye, EyeOff } from "lucide-react";
 
 function getStrength(pwd) {
   if (!pwd || pwd.length < 6) return "weak";
-  const hasLetter  = /[a-zA-Z]/.test(pwd);
-  const hasNumber  = /\d/.test(pwd);
+  const hasLetter = /[a-zA-Z]/.test(pwd);
+  const hasNumber = /\d/.test(pwd);
   const hasSpecial = /[!@#$%^&*_\-]/.test(pwd);
   if (pwd.length >= 10 && hasLetter && hasNumber && hasSpecial) return "strong";
-  if (pwd.length >= 8  && hasLetter && hasNumber)               return "medium";
+  if (pwd.length >= 8 && hasLetter && hasNumber) return "medium";
   return "weak";
 }
 
 function validatePassword(pwd) {
   if (!pwd || pwd.length < 8) return "Must be at least 8 characters.";
-  if (!/[a-zA-Z]/.test(pwd))  return "Must contain at least one letter.";
-  if (!/\d/.test(pwd))        return "Must contain at least one number.";
+  if (!/[a-zA-Z]/.test(pwd)) return "Must contain at least one letter.";
+  if (!/\d/.test(pwd)) return "Must contain at least one number.";
   return "";
 }
 
 const strengthConfig = {
-  weak:   { label: "Weak",   color: "#f87171", width: "33%"  },
-  medium: { label: "Medium", color: "#f59e0b", width: "66%"  },
+  weak: { label: "Weak", color: "#f87171", width: "33%" },
+  medium: { label: "Medium", color: "#f59e0b", width: "66%" },
   strong: { label: "Strong", color: "#22c55e", width: "100%" },
 };
 
@@ -62,22 +62,22 @@ function Spinner() {
 export default function StudentRegister() {
   const router = useRouter();
 
-  const [fullName,        setFullName]        = useState("");
-  const [studentId,       setStudentId]       = useState("");
-  const [classId,         setClassId]         = useState("");
-  const [email,           setEmail]           = useState("");
-  const [password,        setPassword]        = useState("");
+  const [fullName, setFullName] = useState("");
+  const [studentId, setStudentId] = useState("");
+  const [classId, setClassId] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPwd,         setShowPwd]         = useState(false);
-  const [showConfirm,     setShowConfirm]     = useState(false);
-  const [loading,         setLoading]         = useState(false);
-  const [error,           setError]           = useState("");
-  const [success,         setSuccess]         = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  const pwdError     = password     ? validatePassword(password)  : "";
+  const pwdError = password ? validatePassword(password) : "";
   const confirmError = confirmPassword && password !== confirmPassword
     ? "Passwords do not match." : "";
-  const strength     = password ? getStrength(password) : null;
+  const strength = password ? getStrength(password) : null;
 
   const isValid =
     fullName.trim() && studentId.trim() && classId && email.trim() &&
@@ -132,10 +132,10 @@ export default function StudentRegister() {
 
     // 3. Store student profile in DB (no plain-text password stored)
     const { error: dbErr } = await supabase.from("students").insert({
-      id:        studentId.trim().toUpperCase(),
+      id: studentId.trim().toUpperCase(),
       full_name: fullName.trim(),
-      email:     email.trim().toLowerCase(),
-      class_id:  classId.trim().replace(/\s+/g, "_").toUpperCase(),
+      email: email.trim().toLowerCase(),
+      class_id: classId.trim().replace(/\s+/g, "_").toUpperCase(),
     });
 
     setLoading(false);
@@ -176,8 +176,10 @@ export default function StudentRegister() {
   // ── Registration Form ───────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F8F9FE] flex items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
-        <LogoHeader />
+      <div className="w-[40%] mx-auto">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <img src="/images/logo.png" alt="Logo" className="w-25 h-25 object-contain" />
+        </div>
 
         <div className="bg-white border border-gray-100 rounded-[2rem] p-8 md:p-10 shadow-sm">
           <h1 className="text-2xl font-black text-gray-800 mb-2">Register</h1>
@@ -216,9 +218,9 @@ export default function StudentRegister() {
               >
                 <option value="">Select your class</option>
                 {[
-                  "BASIC 1","BASIC 2","BASIC 3","BASIC 4","BASIC 5","BASIC 6",
-                  "BASIC 7","BASIC 8","BASIC 9",
-                  "SS1","SS2","SS3",
+                  "BASIC 1", "BASIC 2", "BASIC 3", "BASIC 4", "BASIC 5", "BASIC 6",
+                  "BASIC 7", "BASIC 8", "BASIC 9",
+                  "SS1", "SS2", "SS3",
                 ].map((cls) => <option key={cls} value={cls}>{cls}</option>)}
               </select>
             </Field>
@@ -317,7 +319,7 @@ export default function StudentRegister() {
           className="text-center text-gray-400 text-xs font-bold uppercase tracking-widest mt-8
             cursor-pointer hover:text-indigo-600 transition-colors underline-offset-4 hover:underline"
         >
-          ← Back to home
+          ← Back to Home
         </p>
       </div>
 

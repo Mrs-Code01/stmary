@@ -32,25 +32,25 @@ const Navbar = () => {
       <div className="w-[90%] mx-auto flex justify-between items-center py-4">
         {/* Logo Section */}
         <Link href="/">
-        <div className="flex items-center gap-4 group cursor-pointer">
-          <img src="/images/logo.png" alt="St Mary Logo" className="w-25 h-25 object-contain transform transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
-          <div className="leading-[.9]">
-            <h1 className="font-black text-[#001011] text-[1.5rem] tracking-tight leading-none group-hover:text-[#cc5500] transition-colors duration-300 font-[var(--worksans-font)]">
-              St. Mary
-            </h1>
-            <p className="text-[1.3rem] text-[#000000] font-black mt-1 font-[var(--inter-font)]">
-              Children School
-            </p>
+          <div className="flex items-center gap-4 group cursor-pointer">
+            <img src="/images/logo.png" alt="St Mary Logo" className="w-20 h-20 object-contain transform transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
+            <div className="leading-[.9]">
+              <h1 className="font-black text-[#001011] text-[1.4rem] tracking-tight leading-none group-hover:text-[#cc5500] transition-colors duration-300 font-[var(--worksans-font)]">
+                St. Mary
+              </h1>
+              <p className="text-[1.2rem] text-[#000000] font-black mt-1 font-[var(--inter-font)]">
+                Children School
+              </p>
+            </div>
           </div>
-        </div>
-</Link>
+        </Link>
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-6 lg:gap-8">
           {navLinks.map((link) => (
             <div key={link.name} className="relative group">
               {link.submenu ? (
                 <button
-                  className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[13px] px-2 py-1 flex items-center gap-1.5 group/link"
+                  className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[15px] px-2 py-1 flex items-center gap-1.5 group/link"
                   onClick={() => toggleDropdown(link.name)}
                 >
                   {link.name}
@@ -62,7 +62,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   href={link.href}
-                  className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[13px] px-2 py-1 flex items-center gap-1.5 group/link"
+                  className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[15px] px-2 py-1 flex items-center gap-1.5 group/link"
                 >
                   {link.name}
                 </Link>
@@ -75,7 +75,7 @@ const Navbar = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="block px-4 py-2.5 text-[#334155] hover:text-[#cc5500] hover:bg-orange-50 transition-all text-[13px] font-medium first:rounded-t-xl last:rounded-b-xl"
+                      className="block px-4 py-2.5 text-[#334155] hover:text-[#cc5500] hover:bg-orange-50 transition-all text-[14px] font-medium first:rounded-t-xl last:rounded-b-xl"
                     >
                       {item.name}
                     </a>
@@ -86,13 +86,13 @@ const Navbar = () => {
           ))}
           <Link
             href="/smcs/student"
-            className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[13px] px-4 py-2 flex items-center gap-1.5 group/link border border-gray-200 rounded-full hover:border-[#cc5500] hover:bg-orange-50"
+            className="relative text-[#334155] hover:text-[#cc5500] font-bold transition-all text-[15px] px-4 py-2 flex items-center gap-1.5 group/link border border-gray-200 rounded-full hover:border-[#cc5500] hover:bg-orange-50"
           >
             Student Portal
           </Link>
           <Link
             href="/staff"
-            className="relative text-[#334155] hover:text-[#0096ff] font-bold transition-all text-[13px] px-4 py-2 flex items-center gap-1.5 group/link border border-gray-200 rounded-full hover:border-[#0096ff] hover:bg-blue-50"
+            className="relative text-[#334155] hover:text-[#0096ff] font-bold transition-all text-[15px] px-4 py-2 flex items-center gap-1.5 group/link border border-gray-200 rounded-full hover:border-[#0096ff] hover:bg-blue-50"
           >
             Staff Portal
           </Link>
@@ -126,9 +126,8 @@ const Navbar = () => {
                   {link.name}
                   <HiChevronDown
                     size={20}
-                    className={`transition-transform duration-300 ${
-                      openDropdown === link.name ? "-rotate-180" : ""
-                    }`}
+                    className={`transition-transform duration-300 ${openDropdown === link.name ? "-rotate-180" : ""
+                      }`}
                   />
                 </button>
               ) : (

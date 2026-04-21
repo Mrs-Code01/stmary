@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { 
-  Home, BookOpen, Laptop, Trophy, FileText, 
+import {
+  Home, BookOpen, Laptop, Trophy, FileText,
   Settings, Bell, Layout, LogOut, Menu, X, User, GraduationCap
 } from "lucide-react";
 import Footer from "@/components/Footer";
@@ -35,7 +35,7 @@ export default function StudentLayout({ children }) {
   const [showNotifs, setShowNotifs] = useState(false);
   const [showAllNotifs, setShowAllNotifs] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+
   const isPublic = PUBLIC_ROUTES.includes(pathname);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function StudentLayout({ children }) {
       .eq("student_id", sid)
       .order("created_at", { ascending: false })
       .limit(10);
-    
+
     if (data) {
       setNotifications(data);
       setUnreadCount(data.filter(n => !n.is_read).length);
@@ -67,7 +67,7 @@ export default function StudentLayout({ children }) {
 
   const markAllAsRead = async () => {
     if (unreadCount === 0 || !student) return;
-    
+
     const { error } = await supabase
       .from("student_notifications")
       .update({ is_read: true })
@@ -153,7 +153,7 @@ export default function StudentLayout({ children }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8F9FE] font-sans text-gray-800">
-      <div className="flex xl:flex-row flex-col flex-1 xl:w-[90%] xl:mx-auto xl:border-x xl:border-gray-100 xl:shadow-2xl overflow-hidden">
+      <div className="flex xl:flex-row flex-col flex-1 overflow-hidden">
         {/* Mobile Top Bar */}
         <div className="xl:hidden flex items-center justify-between p-5 bg-white border-b border-gray-100 z-50">
           <div className="flex items-center space-x-2">
@@ -170,21 +170,22 @@ export default function StudentLayout({ children }) {
         {/* --- SIDEBAR --- */}
         <aside className={`fixed xl:static top-0 left-0 z-40 h-full w-64 bg-white p-6 flex flex-col border-r border-gray-100 transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full xl:translate-x-0"}`}>
           <div className="hidden xl:flex items-center space-x-3 mb-10 px-2 cursor-pointer" onClick={() => router.push("/")}>
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <Layout className="text-white" size={24} />
+            <div className="flex items-center gap-3 mb-1 justify-center">
+              <img
+                src="/images/logo.png"
+                alt="St Mary Logo"
+                className="w-25 h-25 object-contain transition-transform duration-300"
+              />
             </div>
-            <span className="text-2xl font-bold tracking-tight">SMCS Portal</span>
           </div>
-          
+
           <nav className="space-y-3 flex-1">
-            <p className="text-sm font-bold text-gray-400 uppercase tracking-widest pl-3 mb-5 mt-6 xl:mt-0">Menu</p>
             {navItems.map((item) => {
               const active = pathname.startsWith(item.href);
               return (
                 <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}>
-                  <div className={`flex items-center space-x-4 p-4 rounded-xl cursor-pointer transition-all ${
-                    active ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"
-                  }`}>
+                  <div className={`flex items-center space-x-4 p-4 rounded-xl cursor-pointer transition-all ${active ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" : "text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"
+                    }`}>
                     <item.icon size={22} />
                     <div className="flex flex-col">
                       <span className="font-medium text-base leading-none">{item.label}</span>
@@ -225,7 +226,7 @@ export default function StudentLayout({ children }) {
               <Settings size={20} />
             </button>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => {
                   setShowNotifs(!showNotifs);
                   if (!showNotifs) markAllAsRead();
@@ -247,7 +248,7 @@ export default function StudentLayout({ children }) {
                   <div className="absolute right-0 mt-3 w-80 bg-[#F8F9FE] rounded-3xl z-40 overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-gray-200 shadow-xl">
                     <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                       <h3 className="font-bold text-sm text-gray-800 uppercase tracking-widest">Notifications</h3>
-                      <button 
+                      <button
                         onClick={() => setShowNotifs(false)}
                         className="p-2 text-gray-400 hover:text-gray-800 transition-colors bg-white border border-gray-100 rounded-xl"
                       >
@@ -263,10 +264,9 @@ export default function StudentLayout({ children }) {
                         notifications.map((n) => (
                           <div key={n.id} className="p-5 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group">
                             <div className="flex items-start gap-4">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                                n.type === 'assessment' ? 'bg-amber-50' : 
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${n.type === 'assessment' ? 'bg-amber-50' :
                                 n.type === 'assignment' ? 'bg-indigo-50' : 'bg-green-50'
-                              }`}>
+                                }`}>
                                 <span className="text-lg">
                                   {n.type === 'assessment' ? '🧪' : n.type === 'assignment' ? '📚' : '📄'}
                                 </span>
@@ -284,7 +284,7 @@ export default function StudentLayout({ children }) {
                       )}
                     </div>
                     <div className="p-3 bg-gray-50 text-center">
-                      <button 
+                      <button
                         onClick={() => {
                           setShowNotifs(false);
                           setShowAllNotifs(true);
@@ -317,20 +317,20 @@ export default function StudentLayout({ children }) {
           {showAllNotifs && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-8 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
               <div className="w-full max-w-4xl bg-white rounded-none md:rounded-[2rem] shadow-2xl flex flex-col h-full md:max-h-[85vh] overflow-hidden animate-in zoom-in-95 duration-300 border border-gray-100">
-                
+
                 {/* Header */}
                 <div className="p-6 md:p-8 border-b border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <h3 className="text-xl font-bold text-gray-700">Notifications</h3>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setShowAllNotifs(false)}
                     className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-all border border-gray-100"
                   >
                     <X size={20} />
                   </button>
                 </div>
-                
+
                 {/* List Content */}
                 <div className="flex-1 overflow-y-auto bg-gray-50/30">
                   {notifications.length === 0 ? (
@@ -344,13 +344,13 @@ export default function StudentLayout({ children }) {
                         <div key={n.id} className="flex items-center gap-4 p-5 md:p-6 bg-white border-b border-gray-100 hover:bg-indigo-50/30 transition-colors">
                           {/* Status Dot */}
                           <div className={`w-2 h-2 rounded-full shrink-0 ${!n.is_read ? 'bg-indigo-500' : 'bg-transparent'}`} />
-                          
+
                           {/* Icon/Avatar Mock */}
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 text-white font-bold
                             ${n.type === 'assessment' ? 'bg-amber-400' : n.type === 'assignment' ? 'bg-blue-500' : 'bg-green-500'}`}>
                             {n.type === 'assessment' ? '🧪' : n.type === 'assignment' ? '📚' : '📄'}
                           </div>
-                          
+
                           {/* Message Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between mb-0.5">
@@ -369,9 +369,9 @@ export default function StudentLayout({ children }) {
                     </div>
                   )}
                 </div>
-                
+
                 {/* Action Bar */}
-                <button 
+                <button
                   onClick={deleteAllNotifications}
                   className="w-full bg-blue-500 hover:bg-blue-600 text-white py-5 font-bold uppercase tracking-widest text-sm transition-all flex items-center justify-center gap-2 active:brightness-90"
                 >
@@ -384,77 +384,60 @@ export default function StudentLayout({ children }) {
           {/* Dynamic Page Content */}
           <div className="p-6 md:p-12 w-full max-w-full mx-auto flex-1">
             {children}
+
+            {/* --- STACKED RIGHT PANEL CONTENT (Calendar/Notices) --- */}
+            <div className="mt-12 pt-12 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-10">
+              {/* Calendar Widget */}
+              <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-bold text-gray-800">April 2026</h3>
+                </div>
+                <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                  {["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
+                    <span key={idx} className="text-gray-400 font-bold mb-2">{d}</span>
+                  ))}
+                  {/* Mock Calendar Grid */}
+                  {Array.from({ length: 30 }).map((_, i) => {
+                    const active = i + 1 === new Date().getDate(); // Current Day mock
+                    return (
+                      <span key={i} className={`py-1.5 rounded-lg flex items-center justify-center ${active
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 font-bold"
+                        : "text-gray-600 hover:bg-gray-100 cursor-pointer font-medium"
+                        }`}>
+                        {i + 1}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Upcoming Tasks */}
+              <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                <h3 className="text-lg font-bold text-gray-800 mb-6">Upcoming Notice</h3>
+                <div className="space-y-6">
+                  {assessmentDate ? (
+                    <div className="relative pl-6 border-l-2 border-indigo-200">
+                      <div className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
+                      <h4 className="font-bold text-base text-gray-800 mb-1">{assessmentDate.label || "Assessment"}</h4>
+                      <p className="text-sm text-gray-500 leading-relaxed mb-3">
+                        This scheduled assessment requires your online presence. Complete assignments beforehand.
+                      </p>
+                      <div className="inline-block bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded text-xs font-bold tracking-wider uppercase">
+                        {new Date(assessmentDate.assessment_date).toLocaleDateString("en-GB", {
+                          day: "numeric", month: "short"
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-5 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-center">
+                      <p className="text-sm text-gray-400 font-medium">No upcoming assessments currently scheduled.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </main>
-
-        {/* --- RIGHT PANEL --- */}
-        <aside className="w-full xl:w-96 p-8 border-t xl:border-t-0 xl:border-l border-gray-100 bg-white flex-shrink-0 h-[100dvh] xl:h-auto xl:max-h-screen xl:overflow-y-auto">
-        {/* Profile Card */}
-        <div className="hidden xl:flex items-center gap-4 mb-10 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-black text-xl shadow-inner overflow-hidden">
-            {student.avatar_url ? (
-              <img src={student.avatar_url} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              student.full_name.charAt(0)
-            )}
-          </div>
-          <div>
-            <h3 className="font-bold text-base text-gray-800 leading-none mb-1">{student.full_name}</h3>
-            <p className="text-sm text-gray-400">Class {student.class_id}</p>
-          </div>
-        </div>
-
-        {/* Calendar Widget */}
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-gray-800">April 2026</h3>
-          </div>
-          <div className="grid grid-cols-7 gap-1 text-center text-xs">
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, idx) => (
-              <span key={idx} className="text-gray-400 font-bold mb-2">{d}</span>
-            ))}
-            {/* Mock Calendar Grid */}
-            {Array.from({ length: 30 }).map((_, i) => {
-              const active = i + 1 === new Date().getDate(); // Current Day mock
-              return (
-                <span key={i} className={`py-1.5 rounded-lg flex items-center justify-center ${
-                  active 
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-200 font-bold" 
-                  : "text-gray-600 hover:bg-gray-100 cursor-pointer font-medium"
-                }`}>
-                  {i + 1}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Upcoming Tasks */}
-        <div>
-          <h3 className="text-lg font-bold text-gray-800 mb-6">Upcoming Notice</h3>
-          <div className="space-y-6">
-            {assessmentDate ? (
-               <div className="relative pl-6 border-l-2 border-indigo-200">
-                 <div className="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></div>
-                 <h4 className="font-bold text-base text-gray-800 mb-1">{assessmentDate.label || "Assessment"}</h4>
-                 <p className="text-sm text-gray-500 leading-relaxed mb-3">
-                   This scheduled assessment requires your online presence. Complete assignments beforehand.
-                 </p>
-                 <div className="inline-block bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded text-xs font-bold tracking-wider uppercase">
-                   {new Date(assessmentDate.assessment_date).toLocaleDateString("en-GB", {
-                     day: "numeric", month: "short"
-                   })}
-                 </div>
-               </div>
-            ) : (
-               <div className="p-5 border border-dashed border-gray-200 rounded-xl bg-gray-50 text-center">
-                 <p className="text-sm text-gray-400 font-medium">No upcoming assessments currently scheduled.</p>
-               </div>
-            )}
-            
-          </div>
-        </div>
-      </aside>
       </div>
       <Footer />
     </div>

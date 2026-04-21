@@ -10,7 +10,8 @@ export default function ConditionalLayout({ children }) {
   const isPortal =
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/smcs") ||
-    pathname.startsWith("/staff");
+    pathname.startsWith("/staff") ||
+    pathname.startsWith("/admin");
 
   if (isPortal) {
     return <>{children}</>;

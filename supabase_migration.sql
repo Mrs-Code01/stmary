@@ -64,6 +64,29 @@ create table if not exists assessment_dates (
 );
 
 -- ============================================================
+-- 7. Admissions table (For public admission forms)
+-- ============================================================
+create table if not exists admissions (
+  id uuid primary key default gen_random_uuid(),
+  student_name text not null,
+  father_name text not null,
+  mother_name text not null,
+  birth_date date not null,
+  gender text not null check (gender in ('Male', 'Female')),
+  present_address text not null,
+  permanent_address text not null,
+  religion text not null,
+  nationality text not null,
+  phone_number text not null,
+  email_address text not null,
+  nin_number text not null,
+  blood_group text not null,
+  status text not null check (status in ('Single', 'Married')),
+  photo_url text not null,
+  created_at timestamptz default now()
+);
+
+-- ============================================================
 -- 7. Storage bucket for PDF results
 -- Run this AFTER creating the tables
 -- ============================================================
@@ -89,3 +112,4 @@ alter table assignments disable row level security;
 alter table results disable row level security;
 alter table submissions disable row level security;
 alter table assessment_dates disable row level security;
+alter table admissions disable row level security;
