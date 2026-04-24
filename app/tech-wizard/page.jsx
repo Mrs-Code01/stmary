@@ -82,9 +82,6 @@ export default function TechWizardPage() {
 
               {/* Text Content Below Image */}
               <div className="space-y-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#cc5500]">
-                  {course.duration}
-                </p>
                 <h3 className="text-2xl font-black text-[#111827] group-hover:text-[#0096ff] transition-colors">
                   {course.title}
                 </h3>

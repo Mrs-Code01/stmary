@@ -127,8 +127,8 @@ export default function TakeAssessment() {
     });
 
     const totalQ = questions.length;
-    // monthly_score = (correct / total) * 33.33
-    const scoreVal = Number(((correctCount / totalQ) * 33.33).toFixed(2));
+    // monthly_score = (correct / total) * (100/3) -> max 33.333...% per month
+    const scoreVal = Number(((correctCount / totalQ) * (100 / 3)).toFixed(1));
 
     const payload = {
       student_id:       student.id,

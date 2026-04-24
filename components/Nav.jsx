@@ -15,9 +15,9 @@ const Navbar = () => {
       href: "#",
       submenu: [
         { name: "Nursery", href: "/classes/nursery" },
-        { name: "Basic 1-6", href: "/classes/basic-1-6" },
-        { name: "Junior Secondary", href: "/classes/junior-secondary" },
-        { name: "Senior Secondary", href: "/classes/senior-secondary" },
+        { name: "Lower Basic", href: "/classes/basic-1-6" },
+        { name: "Higher Basic", href: "/classes/junior-secondary" },
+        { name: "Senior", href: "/classes/senior-secondary" },
       ],
     },
     { name: "Tech Wizard", href: "/tech-wizard" },
@@ -34,7 +34,7 @@ const Navbar = () => {
         <Link href="/">
           <div className="flex items-center gap-4 group cursor-pointer">
             <img src="/images/logo.png" alt="St Mary Logo" className="w-20 h-20 object-contain transform transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
-            <div className="leading-[.9]">
+            <div className="leading-[.9] max-[420px]:hidden">
               <h1 className="font-black text-[#001011] text-[1.4rem] tracking-tight leading-none group-hover:text-[#cc5500] transition-colors duration-300 font-[var(--worksans-font)]">
                 St. Mary
               </h1>
@@ -121,7 +121,7 @@ const Navbar = () => {
               {link.submenu ? (
                 <button
                   onClick={() => toggleDropdown(link.name)}
-                  className="w-full text-left text-xl font-bold text-[#000000] py-3 px-4 rounded-xl hover:bg-orange-50 hover:text-[#cc5500] transition-all flex items-center justify-between"
+                  className="w-full text-left max-[700px]:text-[1.2rem] md:text-[22px] font-bold text-[#000000] py-3 px-4 rounded-xl hover:bg-orange-50 hover:text-[#cc5500] transition-all flex items-center justify-between"
                 >
                   {link.name}
                   <HiChevronDown
@@ -134,7 +134,7 @@ const Navbar = () => {
                 <Link
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className="block w-full text-left text-xl font-bold text-[#000000] py-3 px-4 rounded-xl hover:bg-orange-50 hover:text-[#cc5500] transition-all"
+                  className="block w-full text-left max-[700px]:text-[1.2rem] md:text-[22px] font-bold text-[#000000] py-3 px-4 rounded-xl hover:bg-orange-50 hover:text-[#cc5500] transition-all"
                 >
                   {link.name}
                 </Link>
@@ -147,7 +147,7 @@ const Navbar = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="block py-2 text-[#000000] hover:text-[#cc5500] transition-all text-[12px] font-bold"
+                      className="block py-2 text-[#000000] hover:text-[#cc5500] transition-all max-[700px]:text-[1.2rem] md:text-[15px] font-bold"
                     >
                       {item.name}
                     </a>
@@ -159,21 +159,21 @@ const Navbar = () => {
           <Link
             href="/smcs/student"
             onClick={() => setIsOpen(false)}
-            className="block w-full text-left text-xl font-bold text-[#0096ff] py-3 px-4 rounded-xl hover:bg-blue-50 transition-all"
+            className="block w-full text-left max-[700px]:text-[1.2rem] md:text-[22px] font-bold text-[#0096ff] py-3 px-4 rounded-xl hover:bg-blue-50 transition-all"
           >
             🎓 Student Portal
           </Link>
           <Link
             href="/staff"
             onClick={() => setIsOpen(false)}
-            className="block w-full text-left text-xl font-bold text-[#334155] py-3 px-4 rounded-xl hover:bg-gray-50 transition-all"
+            className="block w-full text-left max-[700px]:text-[1.2rem] md:text-[22px] font-bold text-[#334155] py-3 px-4 rounded-xl hover:bg-gray-50 transition-all"
           >
             🏫 Staff Portal
           </Link>
           <Link
             href="/apply"
             onClick={() => setIsOpen(false)}
-            className="block w-full text-center text-xl font-bold bg-[#0096ff] text-white py-4 mt-2 rounded-xl"
+            className="block w-full text-center max-[700px]:text-[1.2rem] md:text-[22px] font-bold bg-[#0096ff] text-white py-4 mt-2 rounded-xl"
           >
             Apply Now
           </Link>

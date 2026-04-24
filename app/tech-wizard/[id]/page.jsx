@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaArrowLeft, FaCheckCircle, FaLock, FaBookOpen, FaUserGraduate, FaClock, FaCertificate } from "react-icons/fa";
+import { FaArrowLeft, FaBookOpen, FaUserGraduate, FaClock } from "react-icons/fa";
 import { useParams } from "next/navigation";
 
 const COURSE_DESCRIPTIONS = {
@@ -20,11 +20,75 @@ export default function CourseDetailPageExact() {
   const courseTitle = id.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
   const courseDesc = COURSE_DESCRIPTIONS[id] || `Dive deep into the ultimate ${courseTitle.toLowerCase()} masterclass designed to take you from a complete beginner to a certified professional. Complete all modules and pass the final assessment to unlock your completion certificate.`;
 
-  const modules = [
-    { num: 1, title: "Fundamentals", locked: false, completed: false },
-    { num: 2, title: "Advanced Techniques", locked: false, completed: false },
-    { num: 3, title: "Practical Application", locked: false, completed: false },
-    { num: 4, title: "Final Assessment", locked: false, completed: false },
+  const COURSE_MODULES = {
+    "prompt-engineering": [
+      { num: 1, title: "Fundamentals", desc: "What LLMs are, prompt anatomy, system vs. user prompts." },
+      { num: 2, title: "Effective Instruction Design", desc: "Templates, constraints, few-shot prompting." },
+      { num: 3, title: "Reasoning & Chain-of-Thought", desc: "Guiding models to reliable multi-step answers." },
+      { num: 4, title: "Retrieval & Context", desc: "Using knowledge bases, embeddings, and RAG patterns." },
+      { num: 5, title: "API Workflows & Tooling", desc: "Calling APIs, function-calling, and embedding pipelines." },
+      { num: 6, title: "Evaluation & Debugging", desc: "Testing prompts, metrics, and iterative improvement." },
+      { num: 7, title: "Safety, Bias & Guardrails", desc: "Content filters, fairness checks, and privacy." },
+      { num: 8, title: "Practical Projects & Portfolio", desc: "Build a tutoring assistant, summarizer, or classroom tool." },
+    ],
+    "website-development": [
+      { num: 1, title: "Fundamentals", desc: "HTML, CSS, and core web principles." },
+      { num: 2, title: "Modern JavaScript", desc: "ES6+, DOM, and asynchronous patterns." },
+      { num: 3, title: "React Basics", desc: "Components, props, state, and hooks." },
+      { num: 4, title: "Next.js & Routing", desc: "Server-side rendering, static pages, and API routes." },
+      { num: 5, title: "Styling & Responsive Design", desc: "CSS modules, flexbox/grid, mobile-first layouts." },
+      { num: 6, title: "State Management & Data Fetching", desc: "Contexts, SWR/React Query patterns." },
+      { num: 7, title: "Backend Essentials", desc: "Simple REST APIs, authentication, and databases." },
+      { num: 8, title: "Deployment & DevOps", desc: "Hosting, CI/CD, performance, and accessibility best practices." },
+      { num: 9, title: "Capstone Website", desc: "Design, build, and present a live portfolio or product site." },
+    ],
+    "ai-automation": [
+      { num: 1, title: "Automation Principles", desc: "When to automate, ROI, and workflow mapping." },
+      { num: 2, title: "Data & Integration Basics", desc: "APIs, webhooks, and common data formats." },
+      { num: 3, title: "No-code/Low-code Tools", desc: "Practical use of automation platforms and connectors." },
+      { num: 4, title: "Orchestrating Multi-step Workflows", desc: "Queues, retries, and scheduling." },
+      { num: 5, title: "AI in Automation", desc: "Applying LLMs and vision models to tasks." },
+      { num: 6, title: "Monitoring & Reliability", desc: "Logging, alerting, and testing automated flows." },
+      { num: 7, title: "Security & Compliance", desc: "Data handling, access control, and privacy." },
+      { num: 8, title: "Real-world Projects", desc: "Automate reporting, email triage, or student progress tracking." },
+    ],
+    "ai-chatbot": [
+      { num: 1, title: "Conversation Design", desc: "Intents, slots, dialogue flows, and UX principles." },
+      { num: 2, title: "Bot Architecture", desc: "Stateless vs. stateful bots, memory strategies." },
+      { num: 3, title: "Building with Platforms", desc: "ChatGPT custom GPTs, Rasa, or Dialogflow basics." },
+      { num: 4, title: "Integrations", desc: "Slack, MS Teams, WhatsApp, and website embedding." },
+      { num: 5, title: "Rich Responses & Tools", desc: "Buttons, cards, file handling, and function-calling." },
+      { num: 6, title: "Testing & Analytics", desc: "Conversation testing, metrics, and improvement cycles." },
+      { num: 7, title: "Safety & Moderation", desc: "Filtering, fallback flows, and escalation to humans." },
+      { num: 8, title: "Capstone Chatbot", desc: "Deploy a parent/teacher assistant or course helpdesk bot." },
+    ],
+    "ai-video-creation": [
+      { num: 1, title: "Story & Script Fundamentals", desc: "Storyboarding and writing for short video." },
+      { num: 2, title: "Generative Video Tools", desc: "Text-to-video, image-to-video, and prompt techniques." },
+      { num: 3, title: "Motion & Animation Basics", desc: "Keyframes, easing, and simple 2D/3D concepts." },
+      { num: 4, title: "Audio & Voice", desc: "Text-to-speech, voiceover recording and mixing." },
+      { num: 5, title: "Editing & Postproduction", desc: "Cuts, transitions, color correction, and captions." },
+      { num: 6, title: "Visual Effects & Motion Graphics", desc: "Overlays, lower thirds, and animations." },
+      { num: 7, title: "Optimization & Publishing", desc: "Formats, platform requirements, and SEO for video." },
+      { num: 8, title: "Portfolio Project", desc: "Produce and publish a short promotional or educational video." },
+    ],
+    "blockchain-development": [
+      { num: 1, title: "Blockchain Fundamentals", desc: "Distributed ledgers, consensus, and wallets." },
+      { num: 2, title: "Cryptography & Tokens", desc: "Keys, signatures, and token standards (ERC-20/721)." },
+      { num: 3, title: "Smart Contracts", desc: "Solidity basics and contract structure." },
+      { num: 4, title: "dApp Architecture", desc: "Front-end ↔ smart contract interaction patterns." },
+      { num: 5, title: "Testing & Security", desc: "Unit tests, common vulnerabilities, and audits." },
+      { num: 6, title: "Layer 2 & Scaling", desc: "Rollups, sidechains, and gas optimization." },
+      { num: 7, title: "Deployment & Ecosystem", desc: "Testnets, mainnet deployment, and block explorers." },
+      { num: 8, title: "Real Project", desc: "Build and deploy a simple token, marketplace, or credentialing dApp." },
+    ],
+  };
+
+  const modules = COURSE_MODULES[id] || [
+    { num: 1, title: "Fundamentals", desc: "Core concepts and foundational knowledge." },
+    { num: 2, title: "Advanced Techniques", desc: "Deeper skills and applied methods." },
+    { num: 3, title: "Practical Application", desc: "Hands-on real-world projects." },
+    { num: 4, title: "Final Assessment", desc: "Assess your learning and earn your certificate." },
   ];
 
   return (
@@ -55,26 +119,7 @@ export default function CourseDetailPageExact() {
                   {courseDesc}
                 </p>
 
-                <div className="flex flex-wrap gap-8 mt-10 border-t border-gray-100 pt-8">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-[#0096ff]">
-                      <FaClock size={16} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Duration</p>
-                      <p className="font-bold">3 Months</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                      <FaCertificate size={16} />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Outcome</p>
-                      <p className="font-bold">Certified Professional</p>
-                    </div>
-                  </div>
-                </div>
+
               </div>
             </div>
 
@@ -83,22 +128,32 @@ export default function CourseDetailPageExact() {
               <h2 className="text-2xl font-black mb-6">Course Modules</h2>
               <div className="space-y-4">
                 {modules.map((mod) => (
-                  <div
+                  <Link
                     key={mod.num}
-                    className="flex items-center justify-between p-6 rounded-2xl border bg-white border-gray-200 shadow-sm hover:border-[#0096ff] hover:shadow-md transition-all cursor-pointer"
+                    href={`/tech-wizard/${id}/module/${mod.num}`}
+                    className="flex items-start justify-between p-6 rounded-2xl border bg-white border-gray-200 shadow-sm hover:border-[#0096ff] hover:shadow-md transition-all group"
                   >
-                    <div className="flex items-center gap-6">
-                      <div className={`w-14 h-14 rounded-full flex items-center justify-center border font-bold ${mod.completed ? "bg-green-50 text-green-600 border-green-200" : "bg-white border-gray-200 text-[#111827]"}`}>
-                        {mod.completed ? <FaCheckCircle size={20} /> : `0${mod.num}`}
+                    <div className="flex items-start gap-6 flex-1 min-w-0">
+                      <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center border font-bold bg-white border-gray-200 text-[#111827] group-hover:border-[#0096ff] group-hover:text-[#0096ff] transition-colors">
+                        {String(mod.num).padStart(2, "0")}
                       </div>
-                      <div>
+                      <div className="flex-1 min-w-0">
                         <p className="text-[10px] uppercase font-bold text-gray-400 tracking-[0.2em] mb-1">Module {mod.num}</p>
-                        <h3 className="font-bold text-lg">{mod.title}</h3>
+                        <h3 className="font-bold text-lg leading-tight group-hover:text-[#0096ff] transition-colors">{mod.title}</h3>
+                        {mod.desc && (
+                          <p className="text-gray-400 text-sm mt-1 leading-relaxed">{mod.desc}</p>
+                        )}
+                        <span className="inline-block mt-3 text-xs font-bold text-[#0096ff] opacity-0 group-hover:opacity-100 transition-opacity">
+                          View details →
+                        </span>
                       </div>
                     </div>
-                    <div>
+                    <div className="ml-4 shrink-0 text-gray-300 group-hover:text-[#0096ff] transition-colors mt-1">
+                      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

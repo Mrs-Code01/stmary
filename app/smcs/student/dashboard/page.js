@@ -84,8 +84,8 @@ export default function StudentDashboard() {
 
     const schoolProgress = schoolTotal === 0 ? 0 : Math.round((schoolDone / schoolTotal) * 100);
 
-    // Overall progress (average of school and tech)
-    const overallProgress = Math.round((schoolProgress + Math.min(100, techProgress)) / 2);
+    // Overall progress (Only Tech assessments as requested: 1/3 per month up to 100%)
+    const overallProgress = Math.round(Math.min(100, techProgress));
 
     setMetrics({
       schoolProgress,

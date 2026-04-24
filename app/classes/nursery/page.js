@@ -29,7 +29,7 @@ const ClassPage = () => {
   return (
     <main className="min-h-screen bg-white font-[var(--inter-font)] relative overflow-x-hidden">
       {/* Hero Section */}
-      <section className="mt-30 relative h-[70vh] flex items-center overflow-hidden">
+       <section className="relative h-[60vh] flex items-center overflow-hidden mt-35">
         <div className="absolute inset-0">
           <img 
             src="/images/one.jpg" 
@@ -44,7 +44,7 @@ const ClassPage = () => {
             Nursery Level
           </div>
           <h1 className="text-5xl md:text-7xl font-black font-[var(--worksans-font)] mb-6 drop-shadow-2xl text-[#ffffff]">
-            Early Years
+          Nursery
           </h1>
           <p className="text-lg md:text-xl max-w-2xl text-white/90 leading-relaxed font-medium">
             A nurturing sanctuary where curiosity is sparked and the foundation for lifelong learning is laid.
@@ -76,17 +76,23 @@ const ClassPage = () => {
 
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {[
-              { title: "Emotional Care", desc: "Nurturing hearts and minds", icon: <FaHeart className="text-red-400" /> },
-              { title: "Cognitive Growth", desc: "Building bright minds", icon: <FaBrain className="text-blue-400" /> },
-              { title: "Social Skills", desc: "Learning together", icon: <FaUsers className="text-purple-400" /> },
-              { title: "Creative Play", desc: "Imagination unleashed", icon: <FaPalette className="text-orange-400" /> }
+              { title: "Emotional Care", desc: "Nurturing hearts and minds", icon: <FaHeart className="text-red-400" />, overlayText: "We provide a safe, loving environment where children learn to process their emotions and build empathy." },
+              { title: "Cognitive Growth", desc: "Building bright minds", icon: <FaBrain className="text-blue-400" />, overlayText: "Interactive puzzles and memory games stimulate critical thinking from an early age." },
+              { title: "Social Skills", desc: "Learning together", icon: <FaUsers className="text-purple-400" />, overlayText: "Group activities and collaborative play help children develop strong communication and teamwork skills." },
+              { title: "Creative Play", desc: "Imagination unleashed", icon: <FaPalette className="text-orange-400" />, overlayText: "Unrestricted access to art supplies, music, and role-play corners to foster boundless creativity." }
             ].map((card, i) => (
-              <div key={i} className="p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6">
+              <div key={i} className="group relative p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 overflow-hidden">
+                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6 relative z-10 transition-transform duration-500 group-hover:scale-110">
                   {card.icon}
                 </div>
-                <h4 className="text-[#001011] font-black text-lg mb-2 font-[var(--worksans-font)]">{card.title}</h4>
-                <p className="text-gray-500 text-sm">{card.desc}</p>
+                <h4 className="text-[#001011] font-black text-lg mb-2 font-[var(--worksans-font)] relative z-10 transition-colors duration-300">{card.title}</h4>
+                <p className="text-gray-500 text-sm relative z-10 transition-opacity duration-300 group-hover:opacity-0">{card.desc}</p>
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-[#001011] p-8 flex flex-col justify-center translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20">
+                  <h4 className="text-white font-black text-lg mb-3 font-[var(--worksans-font)]">{card.title}</h4>
+                  <p className="text-white/80 text-sm leading-relaxed">{card.overlayText}</p>
+                </div>
               </div>
             ))}
           </div>

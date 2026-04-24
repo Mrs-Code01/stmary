@@ -6,7 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import {
   Home, BookOpen, Laptop, Trophy, FileText,
-  Settings, Bell, Layout, LogOut, Menu, X, User, GraduationCap
+  Settings, Bell, LogOut, Menu, X, User, GraduationCap
 } from "lucide-react";
 import Footer from "@/components/Footer";
 
@@ -157,10 +157,12 @@ export default function StudentLayout({ children }) {
         {/* Mobile Top Bar */}
         <div className="xl:hidden flex items-center justify-between p-5 bg-white border-b border-gray-100 z-50">
           <div className="flex items-center space-x-2">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <Layout className="text-white" size={24} />
-            </div>
-            <span className="text-2xl font-bold tracking-tight">SMCS Portal</span>
+            <img
+              src="/images/logo.png"
+              alt="St Mary Logo"
+              className="w-10 h-10 object-contain"
+            />
+            <span className="text-xl font-bold tracking-tight text-gray-800">Student Portal</span>
           </div>
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 text-gray-600">
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}

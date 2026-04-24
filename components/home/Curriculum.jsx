@@ -4,7 +4,6 @@ const AcademicStructure = () => {
   const milestones = [
     {
       id: "01",
-      age: "AGES 18 MONTHS - 5 YEARS",
       title: "Nursery",
       description:
         "A nurturing sanctuary where curiosity is sparked and the foundation for lifelong learning is laid.",
@@ -13,8 +12,7 @@ const AcademicStructure = () => {
     },
     {
       id: "02",
-      age: "YEARS 1 - 6",
-      title: "Basic 1-6",
+      title: "Lower Basic",
       description:
         "Building critical thinkers through a rich blend of Nigerian and British curricula.",
       image: "images/two.jpg",
@@ -22,8 +20,7 @@ const AcademicStructure = () => {
     },
     {
       id: "03",
-      age: "JSS 1 - JSS 3",
-      title: "Junior Secondary",
+      title: "Higher Basic",
       description:
         "Bridging the gap to advanced learning with a focus on core academic mastery and personal growth.",
       image: "images/three.jpg",
@@ -31,8 +28,7 @@ const AcademicStructure = () => {
     },
     {
       id: "04",
-      age: "SSS 1 - SSS 3",
-      title: "Senior Secondary",
+      title: "Senior",
       description:
         "Empowering future leaders with academic excellence and professional skill acquisition.",
       image: "images/four.jpg",
@@ -82,9 +78,6 @@ const AcademicStructure = () => {
 
               {/* Content Section */}
               <div className="flex flex-col flex-grow px-2">
-                <p className="text-[#cc5500] text-[11px] md:text-[9px] font-black tracking-[0.2em] uppercase mb-3 font-[var(--inter-font)]">
-                  {item.age}
-                </p>
                 <h3 className="text-[#001011] text-2xl md:text-3xl font-black mb-4 font-[var(--worksans-font)] group-hover:text-[#0096ff] transition-colors">
                   {item.title}
                 </h3>

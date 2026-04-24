@@ -1,96 +1,175 @@
-import React from "react";
-import Link from "next/link";
-import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
+"use client";
+import React, { useState } from 'react';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
 
-export default function ContactUsPage() {
+const ContactUsPage = () => {
+  const [formData, setFormData] = useState({
+    parentName: '',
+    phone: '',
+    childClass: '',
+    childName: '',
+    comment: ''
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Logic for backend integration goes here
+    console.log('Form Submitted:', formData);
+    alert('Thank you! Your message has been received.');
+    setFormData({
+      parentName: '',
+      phone: '',
+      childClass: '',
+      childName: '',
+      comment: ''
+    });
+  };
+
   return (
-    <div className="min-h-[80vh] flex flex-col">
-      {/* Banner */}
-      <div className="bg-[#0B1528] text-white py-16 text-center">
-        <h1 className="text-4xl font-black mb-4 tracking-tight">Contact Us</h1>
-        <p className="text-blue-200 text-sm max-w-xl mx-auto px-4">
-          We&apos;d love to hear from you. Reach out to St. Mary Children School for any inquiries, admissions, or support.
+    <div className="flex flex-col md:flex-row min-h-[90vh] font-[var(--inter-font)] relative z-10 bg-white">
+      
+      {/* Left Section: Form */}
+      <div className="w-full md:w-3/5 bg-white p-8 md:p-20">
+        <div className="inline-block bg-[#0096ff] text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 mb-6 mt-[120px]">
+          CONTACT US
+        </div>
+        <h1 className="text-4xl md:text-5xl font-black text-[#001011] mb-4 font-[var(--worksans-font)] tracking-tight">Let's work together!</h1>
+        <p className="text-slate-500 mb-10 text-lg">
+          St. Mary Children School — We'd love to hear from you. Fill out the form and we'll get back to you shortly.
         </p>
-      </div>
 
-      <div className="flex-1 bg-[#f8fafc] py-16 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-12">
-          {/* Contact Details */}
-          <div className="flex-1 space-y-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Get In Touch</h2>
-            
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 flex-shrink-0">
-                <FaMapMarkerAlt size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Campus Address</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  20, Gana Street, Maitama,<br />
-                  Abuja, Nigeria
-                </p>
-              </div>
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Name</label>
+            <input
+              required
+              type="text"
+              name="parentName"
+              value={formData.parentName}
+              placeholder="Your full name"
+              className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 flex-shrink-0">
-                <FaPhone size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Phone Number</h3>
-                <p className="text-gray-600 text-sm">
-                  <a href="tel:+2349026361135" className="hover:text-blue-600 transition-colors">+2349026 361135</a>
-                </p>
-              </div>
-            </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Phone</label>
+            <input
+              required
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              placeholder="Your phone number"
+              className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
+              onChange={handleChange}
+            />
+          </div>
 
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 flex-shrink-0">
-                <FaEnvelope size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold text-gray-900 mb-1">Email Address</h3>
-                <p className="text-gray-600 text-sm">
-                  <a href="mailto:info@smec.edu.ng" className="hover:text-blue-600 transition-colors">info@smec.edu.ng</a>
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Class</label>
+              <input
+                type="text"
+                name="childClass"
+                value={formData.childClass}
+                placeholder="e.g. Primary 3"
+                className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
+                onChange={handleChange}
+              />
             </div>
-            
-            <div className="pt-6 border-t border-gray-200">
-              <Link href="/" className="inline-flex items-center text-blue-600 font-bold text-sm tracking-wide hover:underline">
-                &larr; Back to Home
-              </Link>
+            <div>
+              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Name</label>
+              <input
+                type="text"
+                name="childName"
+                value={formData.childName}
+                placeholder="Your child's name"
+                className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
+                onChange={handleChange}
+              />
             </div>
           </div>
 
-          {/* Contact Form Placeholder */}
-          <div className="flex-1 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Send a Message</h2>
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Comment / Complaint</label>
+            <textarea
+              required
+              name="comment"
+              value={formData.comment}
+              placeholder="Write your comment or complaint here..."
+              rows="4"
+              className="w-full bg-slate-50 border-none rounded-xl p-6 mt-2 focus:outline-none focus:ring-2 focus:ring-[#cc5500]/20 transition-all text-[#001011] text-base resize-none"
+              onChange={handleChange}
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-[#cc5500] to-[#ff8c00] hover:from-[#b34a00] hover:to-[#cc5500] text-white font-black py-5 rounded-sm uppercase tracking-widest text-sm transition-all shadow-[0_15px_40px_rgba(204,85,0,0.3)] active:scale-95 flex items-center justify-center gap-3"
+          >
+            Submit Message
+          </button>
+        </form>
+      </div>
+
+      {/* Right Section: Contact Info */}
+      <div className="w-full md:w-2/5 bg-[#000000] p-8 md:p-20 text-white flex flex-col justify-center relative overflow-hidden group">
+        {/* Abstract shapes from brand theme */}
+        <div className="absolute top-[-10%] right-[-10%] w-[20rem] h-[20rem] bg-[#000000] rounded-full mix-blend-screen filter blur-[80px] pointer-events-none transition-transform duration-1000 group-hover:scale-150"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[15rem] h-[15rem] bg-[#000000] rounded-full mix-blend-screen filter blur-[60px] pointer-events-none transition-transform duration-1000 group-hover:scale-150"></div>
+
+        <div className="relative z-10">
+          <h2 className="text-3xl md:text-4xl text-[#ffffff] mb-8 font-[var(--worksans-font)] tracking-tight">Contact Information</h2>
+          <p className="text-white/70 mb-12 text-lg font-medium">Reach out to us directly through any of the official channels below.</p>
+
+          <div className="space-y-10">
+            <div className="flex items-center gap-6 group/item cursor-pointer">
+              <span className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center group-hover/item:bg-[#cc5500] group-hover/item:border-[#cc5500] transition-colors shadow-lg">
+                <FaPhone className="text-white text-xl" />
+              </span>
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Your Name</label>
-                <input type="text" className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="John Doe" />
+                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest mb-1">Call Us Now</p>
+                <p className="text-xl font-bold group-hover/item:text-[#cc5500] transition-colors">+234 80 6124 8237</p>
               </div>
+            </div>
+
+            <div className="flex items-center gap-6 group/item cursor-pointer">
+              <span className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center group-hover/item:bg-[#0096ff] group-hover/item:border-[#0096ff] transition-colors shadow-lg">
+                <FaEnvelope className="text-white text-xl" />
+              </span>
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Email Address</label>
-                <input type="email" className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="john@example.com" />
+                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest mb-1">Email Us</p>
+                <p className="text-lg font-bold group-hover/item:text-[#0096ff] transition-colors">iwuezemarychildrenschool@gmail.com</p>
               </div>
+            </div>
+
+            <div className="flex items-center gap-6 group/item cursor-pointer">
+              <span className="w-14 h-14 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center group-hover/item:bg-[#ff8c00] group-hover/item:border-[#ff8c00] transition-colors shadow-lg">
+                <FaMapMarkerAlt className="text-white text-xl" />
+              </span>
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase mb-2">Message</label>
-                <textarea rows="4" className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="How can we help you?"></textarea>
+                <p className="text-[10px] text-white/50 font-black uppercase tracking-widest mb-1">Visit Campus</p>
+                <p className="text-lg font-bold group-hover/item:text-[#ff8c00] transition-colors">8, Alofoje Street, Off Uwasota Road, Ugbowo, Benin City</p>
               </div>
-              
-              <button 
-                type="button" 
-                onClick={() => alert('Message sending logic will be implemented here!')}
-                className="w-full bg-[#0B1528] text-white font-bold uppercase tracking-widest text-xs py-4 rounded-lg hover:bg-blue-800 transition-colors"
-              >
-                Send Message
-              </button>
-            </form>
+            </div>
+          </div>
+
+          {/* WhatsApp Action */}
+          <div className="mt-16 pt-10 border-t border-white/10">
+            <button className="flex items-center gap-4 px-6 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px]">
+              <FaWhatsapp className="text-2xl" />
+              <span>Chat with Admin</span>
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default ContactUsPage;

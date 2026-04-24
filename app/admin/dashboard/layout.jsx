@@ -7,6 +7,7 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Image as GalleryIcon,
+  FileText,
   LogOut,
   Menu
 } from "lucide-react";
@@ -91,6 +92,16 @@ export default function AdminDashboardLayout({ children }) {
             >
               <GalleryIcon size={18} />
               Gallery
+            </Link>
+            <Link
+              href="/admin/dashboard/lesson-notes"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors ${pathname.startsWith("/admin/dashboard/lesson-notes")
+                ? "bg-blue-600/10 text-blue-400 border-r-4 border-blue-600"
+                : "hover:bg-slate-800"
+                }`}
+            >
+              <FileText size={18} />
+              Lesson Notes
             </Link>
           </div>
         </nav>

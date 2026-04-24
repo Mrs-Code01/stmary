@@ -29,7 +29,7 @@ const SeniorSecondaryPage = () => {
   return (
     <main className="min-h-screen bg-white font-[var(--inter-font)] relative overflow-x-hidden">
       {/* Hero Section */}
-      <section className="mt-30 relative h-[70vh] flex items-center overflow-hidden">
+      <section className="relative h-[60vh] flex items-center overflow-hidden mt-35">
         <div className="absolute inset-0">
           <img 
             src="/images/four.jpg" 
@@ -44,7 +44,7 @@ const SeniorSecondaryPage = () => {
             University Preparation
           </div>
           <h1 className="text-5xl md:text-7xl font-black font-[var(--worksans-font)] mb-6 drop-shadow-2xl text-[#ffffff]">
-            Senior <br />Secondary
+            Senior
           </h1>
           <p className="text-lg md:text-xl max-w-2xl text-white/90 leading-relaxed font-medium">
             Empowering future leaders with academic excellence and professional skill acquisition for global competitiveness.
@@ -75,17 +75,23 @@ const SeniorSecondaryPage = () => {
 
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             {[
-              { title: "University Prep", desc: "Coaching for IGCSE, WAEC, JAMB", icon: <FaGraduationCap className="text-blue-600" /> },
-              { title: "Career Placement", desc: "Guiding the future workforce", icon: <FaUserTie className="text-slate-600" /> },
-              { title: "Innovation & IT", desc: "Mastering complex digital logic", icon: <FaNetworkWired className="text-indigo-600" /> },
-              { title: "Social Impact", desc: "Building local/global leaders", icon: <FaLightbulb className="text-yellow-500" /> }
+              { title: "University Prep", desc: "Coaching for IGCSE, WAEC, JAMB", icon: <FaGraduationCap className="text-blue-600" />, overlayText: "Intensive preparation and mock exams to ensure outstanding scores in national and international examinations." },
+              { title: "Career Placement", desc: "Guiding the future workforce", icon: <FaUserTie className="text-slate-600" />, overlayText: "Dedicated counseling to help students discover their passions and align them with real-world career paths." },
+              { title: "Innovation & IT", desc: "Mastering complex digital logic", icon: <FaNetworkWired className="text-indigo-600" />, overlayText: "Advanced computer science principles, programming, and understanding of modern digital ecosystems." },
+              { title: "Social Impact", desc: "Building local/global leaders", icon: <FaLightbulb className="text-yellow-500" />, overlayText: "Fostering leadership through community service, innovative projects, and global awareness programs." }
             ].map((card, i) => (
-              <div key={i} className="p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6">
+              <div key={i} className="group relative p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 overflow-hidden">
+                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6 relative z-10 transition-transform duration-500 group-hover:scale-110">
                   {card.icon}
                 </div>
-                <h4 className="text-[#001011] font-black text-lg mb-2 font-[var(--worksans-font)]">{card.title}</h4>
-                <p className="text-gray-500 text-sm">{card.desc}</p>
+                <h4 className="text-[#001011] font-black text-lg mb-2 font-[var(--worksans-font)] relative z-10 transition-colors duration-300">{card.title}</h4>
+                <p className="text-gray-500 text-sm relative z-10 transition-opacity duration-300 group-hover:opacity-0">{card.desc}</p>
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-[#001011] p-8 flex flex-col justify-center translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20">
+                  <h4 className="text-white font-black text-lg mb-3 font-[var(--worksans-font)]">{card.title}</h4>
+                  <p className="text-white/80 text-sm leading-relaxed">{card.overlayText}</p>
+                </div>
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { BookOpen, GraduationCap, Medal, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import { BookOpen, GraduationCap, Medal, Baby, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -88,6 +88,7 @@ export default function StaffPortal() {
   const [forgotSuccess, setForgotSuccess] = useState(false);
 
   const [selectedClasses, setSelectedClasses] = useState({
+    "Nursery": "",
     "Lower Basic": "",
     "Higher Basic": "",
     "Senior": "",
@@ -250,6 +251,13 @@ export default function StaffPortal() {
   // ── Class categories ──────────────────────────────────────────────────────
   const categories = [
     {
+      title: "Nursery",
+      icon: <Baby className="w-6 h-6 text-purple-600" />,
+      iconBg: "bg-purple-50", borderColor: "border-purple-500",
+      buttonBg: "bg-purple-300", hoverBg: "hover:bg-purple-400",
+      classes: ["PRENURSERY", "NURSERY 1", "NURSERY 2", "NURSERY 3"],
+    },
+    {
       title: "Lower Basic",
       icon: <BookOpen className="w-6 h-6 text-blue-600" />,
       iconBg: "bg-blue-50", borderColor: "border-blue-500",
@@ -274,12 +282,12 @@ export default function StaffPortal() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 font-sans relative">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 font-sans relative mt-5 ">
 
       {/* Back to Home */}
       <button
         onClick={() => router.push("/")}
-        className="absolute top-6 left-6 text-gray-500 hover:text-gray-900 font-medium transition-colors"
+        className="absolute top-6 left-6 text-gray-500 hover:text-gray-900 font-medium transition-colors pb-[100px]"
       >
         ← Back to Home
       </button>
@@ -296,7 +304,7 @@ export default function StaffPortal() {
       </div>
 
       {/* Category Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
         {categories.map((item, index) => (
           <div
             key={index}

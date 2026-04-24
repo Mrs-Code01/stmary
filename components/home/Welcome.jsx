@@ -6,12 +6,12 @@ const DirectorsWelcome = () => {
       {/* Container: 90% width centered */}
       <div className="w-[90%] mx-auto">
         {/* Section Title */}
-        <h2 className="text-[#334155] text-2xl md:text-[35px] font-bold mb-8 font-[var(--worksans-font)]">
+        <h2 className="text-[#334155] max-[700px]:text-[1.8rem] md:text-[35px] font-bold mb-8 font-[var(--worksans-font)]">
           Director's Welcome Message
         </h2>
 
         {/* Content Body: Simple Paragraphs */}
-        <div className="flex flex-col gap-8 text-[#334155] leading-relaxed text-base md:text-[22px] font-[var(--inter-font)]">
+        <div className="flex flex-col gap-8 text-[#334155] leading-relaxed max-[700px]:text-[1.3rem] md:text-[22px] font-[var(--inter-font)]">
           <p>
             At St. Mary Educational Center, we believe education is more than
             academics — it is the complete development of the individual. Our
@@ -49,10 +49,10 @@ const DirectorsWelcome = () => {
         {/* Right Aligned Signature Section */}
         <div className="mt-16 flex flex-col items-end text-right">
           <div className="pt-6">
-            <h4 className="text-[#334155] text-lg md:text-[22px] font-medium">
+            <h4 className="text-[#334155] max-[700px]:text-[1.3rem] md:text-[22px] font-medium">
               - The Director
             </h4>
-            <p className="text-gray-400 text-[17px] font-medium tracking-wide mt-1 italic">
+            <p className="text-gray-400 max-[700px]:text-[1.1rem] text-[17px] font-medium tracking-wide mt-1 italic">
               St. Mary Educational Center
             </p>
           </div>

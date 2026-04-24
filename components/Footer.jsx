@@ -18,21 +18,6 @@ const Footer = () => {
               Empowering the next generation of Nigerian leaders and global
               citizens through academic excellence and character development.
             </p>
-
-            <div className="flex items-center gap-4 pt-2">
-              <a
-                href="#"
-                className="w-10 h-10 border border-gray-700 rounded-sm flex items-center justify-center hover:bg-white hover:text-[#0B1528] transition-all"
-              >
-                <span className="text-xs uppercase font-bold">f</span>
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 border border-gray-700 rounded-sm flex items-center justify-center hover:bg-white hover:text-[#0B1528] transition-all"
-              >
-                <span className="text-xs uppercase font-bold">in</span>
-              </a>
-            </div>
           </div>
 
           {/* Navigation Columns Wrapper */}
@@ -84,17 +69,17 @@ const Footer = () => {
                 </li>
                 <li>
                   <a href="/classes/basic-1-6" className="hover:text-blue-400 transition-colors">
-                    Basic 1-6
+                   Lower Basic
                   </a>
                 </li>
                 <li>
                   <a href="/classes/junior-secondary" className="hover:text-blue-400 transition-colors">
-                    Junior Secondary
+                   Higher Basic
                   </a>
                 </li>
                 <li>
                   <a href="/classes/senior-secondary" className="hover:text-blue-400 transition-colors">
-                    Senior Secondary
+                    Senior
                   </a>
                 </li>
               </ul>
@@ -109,8 +94,7 @@ const Footer = () => {
                 <li className="flex items-start gap-3">
                   <span className="text-gray-500 mt-1">📍</span>
                   <p className="text-gray-300 leading-snug">
-                    20, Gana Street, Maitama,
-                    <br /> Abuja, Nigeria
+                   18, Alofoje Street, Off Uwasota Road, Ugbowo, Benin City
                   </p>
                 </li>
                 <li className="flex items-center gap-3">
@@ -119,7 +103,7 @@ const Footer = () => {
                     href="tel:+2349026361135"
                     className="hover:text-blue-400 transition-colors"
                   >
-                    +2349026 361135
+                    +2348061248237
                   </a>
                 </li>
                 <li className="flex items-center gap-3">
@@ -128,7 +112,7 @@ const Footer = () => {
                     href="mailto:info@smec.edu.ng"
                     className="hover:text-blue-400 transition-colors"
                   >
-                    info@smec.edu.ng
+                    iwuezemarychildrenschool@gmail.com
                   </a>
                 </li>
               </ul>

@@ -5,7 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import UploadAssignmentModal from "@/components/smcs/UploadAssignmentModal";
 import UploadResultModal from "@/components/smcs/UploadResultModal";
-import { FaBook, FaLaptopCode, FaFilePdf, FaCalendarAlt, FaSignOutAlt, FaEdit, FaTrash } from "react-icons/fa";
+import UploadLessonNoteModal from "@/components/smcs/UploadLessonNoteModal";
+import { FaBook, FaLaptopCode, FaFilePdf, FaCalendarAlt, FaSignOutAlt, FaEdit, FaTrash, FaFileAlt } from "react-icons/fa";
 
 function getTeacherFromCookie() {
   if (typeof document === "undefined") return null;
@@ -148,6 +149,14 @@ export default function TeacherDashboard() {
       color: "from-[#7c3aed] to-[#a855f7]",
       glow: "rgba(124,58,237,0.35)",
     },
+    {
+      id: "lessonNote",
+      label: "Upload Lesson Notes",
+      desc: "Share a lesson note document (PDF or Word) with the admin",
+      icon: <FaFileAlt size={24} />,
+      color: "from-[#16a34a] to-[#22c55e]",
+      glow: "rgba(34,197,94,0.35)",
+    },
   ];
 
   if (!teacher) return null;
@@ -185,7 +194,7 @@ export default function TeacherDashboard() {
           <h2 className="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">
             Actions
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {actions.map((a) => (
               <button
                 key={a.id}
@@ -367,6 +376,14 @@ export default function TeacherDashboard() {
         <UploadResultModal
           classId={classId}
           initialData={editItem}
+          onClose={handleModalClose}
+          onRefresh={() => fetchData(classId)}
+        />
+      )}
+      {modal === "lessonNote" && (
+        <UploadLessonNoteModal
+          classId={classId}
+          teacherId={teacher.id}
           onClose={handleModalClose}
           onRefresh={() => fetchData(classId)}
         />
