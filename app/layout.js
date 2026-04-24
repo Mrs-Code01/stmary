@@ -3,14 +3,14 @@ import "./globals.css";
 import ConditionalLayout from "@/components/ConditionalLayout";
 
 const worksans = localFont({
-  src: "./font/worksans-bold.ttf",
+  src: "./font/WorkSans-Bold.ttf",
   variable: "--worksans-font", // Matches globals.css
   display: "swap",
 });
 
 const inter = localFont({
-  src: "./font/inter-light-BETA.otf",
-  variable: "--inter-font", // Matches globals.css
+  src: "./font/Inter-Light-BETA.otf",
+  variable: "--inter-font",
   display: "swap",
 });
 
