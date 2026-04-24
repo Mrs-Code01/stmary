@@ -176,7 +176,7 @@ export default function StudentRegister() {
   // ── Registration Form ───────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F8F9FE] flex items-center justify-center px-4 py-16">
-      <div className="w-[40%] mx-auto">
+      <div className="w-[40%] mx-auto max-[800px]:w-[70%] max-[470px]:w-[90%]">
         <div className="flex items-center justify-center gap-3 mb-4">
           <img src="/images/logo.png" alt="Logo" className="w-25 h-25 object-contain" />
         </div>

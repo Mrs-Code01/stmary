@@ -1,7 +1,11 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { FaMicroscope, FaBrain, FaDraftingCompass, FaGlobe, FaBullhorn, FaRobot, FaBusinessTime } from "react-icons/fa";
 
 const JuniorSecondaryPage = () => {
+  const [activeCard, setActiveCard] = useState(null);
+
   const focusAreas = [
     {
       id: "01",
@@ -29,7 +33,7 @@ const JuniorSecondaryPage = () => {
   return (
     <main className="min-h-screen bg-white font-[var(--inter-font)] relative overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative h-[60vh] flex items-center overflow-hidden mt-35">
+      <section className="relative h-[50vh] flex items-center overflow-hidden mt-35">
         <div className="absolute inset-0">
           <img 
             src="/images/three.jpg" 
@@ -53,9 +57,9 @@ const JuniorSecondaryPage = () => {
       </section>
 
       {/* Overview Section */}
-      <section className="py-24 w-[90%] mx-auto">
+      <section className="py-24 w-[90%] mx-auto" onClick={() => setActiveCard(null)}>
         <div className="flex flex-col lg:flex-row gap-20 items-center">
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-8" onClick={(e) => e.stopPropagation()}>
             <div className="space-y-4">
               <p className="text-[#cc5500] text-xs font-black uppercase tracking-[0.3em]">Transitioning to Mastery</p>
               <h2 className="text-4xl md:text-5xl font-black text-[#001011] font-[var(--worksans-font)] leading-tight">
@@ -73,22 +77,29 @@ const JuniorSecondaryPage = () => {
             </p>
           </div>
 
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full" onClick={(e) => e.stopPropagation()}>
             {[
               { title: "Public Speaking", desc: "Developing confident orators", icon: <FaBullhorn className="text-red-500" />, overlayText: "Engaging in debates and presentations to build articulate, confident communicators." },
               { title: "Critical Thinking", desc: "Solving complex problems", icon: <FaBrain className="text-indigo-500" />, overlayText: "Encouraging analytical reasoning and independent thought across diverse subjects." },
               { title: "Robotics & AI", desc: "Exploring future tech", icon: <FaRobot className="text-blue-500" />, overlayText: "Hands-on projects with foundational robotics and artificial intelligence logic." },
               { title: "Pre-Business", desc: "Intro to financial logic", icon: <FaBusinessTime className="text-emerald-500" />, overlayText: "Learning the basics of entrepreneurship, economics, and real-world financial literacy." }
             ].map((card, i) => (
-              <div key={i} className="group relative p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 overflow-hidden">
-                <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6 relative z-10 transition-transform duration-500 group-hover:scale-110">
+              <div 
+                key={i} 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveCard(activeCard === i ? null : i);
+                }}
+                className={`group relative p-8 rounded-[2rem] bg-gray-50 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 overflow-hidden cursor-pointer ${activeCard === i ? '-translate-y-1 shadow-xl' : ''}`}
+              >
+                <div className={`w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-xl shadow-sm mb-6 relative z-10 transition-transform duration-500 ${activeCard === i ? 'scale-110' : 'group-hover:scale-110'}`}>
                   {card.icon}
                 </div>
                 <h4 className="text-[#001011] font-black text-lg mb-2 font-[var(--worksans-font)] relative z-10 transition-colors duration-300">{card.title}</h4>
-                <p className="text-gray-500 text-sm relative z-10 transition-opacity duration-300 group-hover:opacity-0">{card.desc}</p>
+                <p className={`text-gray-500 text-sm relative z-10 transition-opacity duration-300 ${activeCard === i ? 'opacity-0' : 'group-hover:opacity-0'}`}>{card.desc}</p>
                 
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-[#001011] p-8 flex flex-col justify-center translate-y-[101%] group-hover:translate-y-0 transition-transform duration-500 ease-in-out z-20">
+                <div className={`absolute inset-0 bg-[#001011] p-8 flex flex-col justify-center transition-transform duration-500 ease-in-out z-20 ${activeCard === i ? 'translate-y-0' : 'translate-y-[101%]'}`}>
                   <h4 className="text-white font-black text-lg mb-3 font-[var(--worksans-font)]">{card.title}</h4>
                   <p className="text-white/80 text-sm leading-relaxed">{card.overlayText}</p>
                 </div>

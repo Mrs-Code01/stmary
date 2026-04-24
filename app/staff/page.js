@@ -282,18 +282,23 @@ export default function StaffPortal() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 font-sans relative mt-5 ">
+    <div className="min-h-screen bg-white flex flex-col items-center py-10 px-6 font-sans">
+      
+      {/* Top Nav */}
+      <div className="w-full max-w-6xl flex justify-start mb-10 md:mb-16">
+        <button
+          onClick={() => router.push("/")}
+          className="text-gray-500 hover:text-gray-900 font-medium transition-colors text-sm md:text-base"
+        >
+          ← Back to Home
+        </button>
+      </div>
 
-      {/* Back to Home */}
-      <button
-        onClick={() => router.push("/")}
-        className="absolute top-6 left-6 text-gray-500 hover:text-gray-900 font-medium transition-colors pb-[100px]"
-      >
-        ← Back to Home
-      </button>
-
-      {/* Header */}
-      <div className="text-center mb-12 flex flex-col items-center">
+      {/* Main Container */}
+      <div className="flex flex-col items-center w-full max-w-6xl flex-grow justify-center pb-20">
+        
+        {/* Header */}
+        <div className="text-center mb-12 flex flex-col items-center">
         <img
           src="/images/logo.png"
           alt="St Mary Logo"
@@ -660,6 +665,7 @@ export default function StaffPortal() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

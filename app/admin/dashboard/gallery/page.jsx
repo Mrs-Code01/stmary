@@ -148,13 +148,13 @@ export default function GalleryPage() {
                 alt="Gallery content" 
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent md:bg-none md:bg-black/50 md:opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-end md:items-center justify-start md:justify-center p-3 pointer-events-none z-10">
                 <button 
                   onClick={() => handleDelete(img.id, img.file_path)}
-                  className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all shadow-lg"
+                  className="bg-red-500 hover:bg-red-600 text-white p-2.5 rounded-full transform md:translate-y-4 md:group-hover:translate-y-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-all shadow-[0_4px_15px_rgba(239,68,68,0.5)] pointer-events-auto"
                   title="Delete Image"
                 >
-                  <Trash2 size={20} />
+                  <Trash2 size={16} className="md:w-5 md:h-5" />
                 </button>
               </div>
             </div>

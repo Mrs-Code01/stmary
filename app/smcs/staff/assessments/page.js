@@ -277,9 +277,12 @@ export default function StaffAssessments() {
       {/* Header */}
       <header className="border-b border-white/5 px-6 md:px-12 py-5 flex items-center justify-between sticky top-0 bg-[#020813]/80 backdrop-blur-xl z-50">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg">
-            SM
-          </div>
+          <button 
+            onClick={() => router.replace("/staff/" + encodeURIComponent(teacher.class_id) + "/dashboard")}
+            className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/5 flex items-center justify-center"
+          >
+            <ArrowLeft size={18} />
+          </button>
           <div>
             <h1 className="text-white font-black text-base uppercase tracking-widest leading-none">Assessment Central</h1>
             <p className="text-white/30 text-[10px] font-bold mt-1 uppercase tracking-tighter">SMCS Staff Dashboard</p>
@@ -290,12 +293,6 @@ export default function StaffAssessments() {
             <span className="text-xs font-bold text-white/70">{teacher.name}</span>
             <span className="text-[10px] text-white/30 font-mono tracking-widest">{teacher.id}</span>
           </div>
-          <button 
-            onClick={() => router.replace("/staff/" + encodeURIComponent(teacher.class_id) + "/dashboard")}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/5"
-          >
-            <ArrowLeft size={18} />
-          </button>
         </div>
       </header>
 
@@ -495,58 +492,60 @@ export default function StaffAssessments() {
                 </div>
                 
                 <div className="bg-white/3 border border-white/5 rounded-[2.5rem] overflow-hidden">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                        <th className="px-8 py-5">Student</th>
-                        <th className="px-8 py-5">Class</th>
-                        <th className="px-8 py-5 text-center">Correct</th>
-                        <th className="px-8 py-5 text-center">Score</th>
-                        <th className="px-8 py-5 text-right">Submitted At</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                      {results.length === 0 ? (
-                        <tr>
-                          <td colSpan="5" className="px-8 py-20 text-center text-white/20 text-sm font-medium">
-                            No submissions found for this assessment yet.
-                          </td>
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-left min-w-[800px]">
+                      <thead>
+                        <tr className="bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                          <th className="px-8 py-5">Student</th>
+                          <th className="px-8 py-5">Class</th>
+                          <th className="px-8 py-5 text-center">Correct</th>
+                          <th className="px-8 py-5 text-center">Score</th>
+                          <th className="px-8 py-5 text-right">Submitted At</th>
                         </tr>
-                      ) : (
-                        results.map(r => (
-                          <tr key={r.id} className="hover:bg-white/1 transition-colors group">
-                            <td className="px-8 py-5">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-indigo-300 font-black text-xs border border-indigo-500/10">
-                                  {r.student?.full_name?.charAt(0) || "S"}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-wide">
-                                    {r.student?.full_name}
-                                  </p>
-                                  <p className="text-[10px] text-white/30 font-mono mt-0.5">{r.student_id}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-8 py-5">
-                              <span className="px-2 py-1 rounded-md bg-white/5 text-white/40 text-[10px] font-bold border border-white/5">
-                                {r.student?.class_id?.replace(/_/g, " ")}
-                              </span>
-                            </td>
-                            <td className="px-8 py-5 text-center text-sm font-bold text-white/70">
-                              {r.correct_answers} / {r.total_questions}
-                            </td>
-                            <td className="px-8 py-5 text-center">
-                              <span className="text-xl font-black text-indigo-400">{r.monthly_score}%</span>
-                            </td>
-                            <td className="px-8 py-5 text-right text-[10px] font-mono text-white/30">
-                              {new Date(r.submitted_at).toLocaleString()}
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {results.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="px-8 py-20 text-center text-white/20 text-sm font-medium">
+                              No submissions found for this assessment yet.
                             </td>
                           </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                        ) : (
+                          results.map(r => (
+                            <tr key={r.id} className="hover:bg-white/1 transition-colors group">
+                              <td className="px-8 py-5">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-indigo-300 font-black text-xs border border-indigo-500/10">
+                                    {r.student?.full_name?.charAt(0) || "S"}
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors uppercase tracking-wide">
+                                      {r.student?.full_name}
+                                    </p>
+                                    <p className="text-[10px] text-white/30 font-mono mt-0.5">{r.student_id}</p>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-8 py-5">
+                                <span className="px-2 py-1 rounded-md bg-white/5 text-white/40 text-[10px] font-bold border border-white/5">
+                                  {r.student?.class_id?.replace(/_/g, " ")}
+                                </span>
+                              </td>
+                              <td className="px-8 py-5 text-center text-sm font-bold text-white/70">
+                                {r.correct_answers} / {r.total_questions}
+                              </td>
+                              <td className="px-8 py-5 text-center">
+                                <span className="text-xl font-black text-indigo-400">{r.monthly_score}%</span>
+                              </td>
+                              <td className="px-8 py-5 text-right text-[10px] font-mono text-white/30">
+                                {new Date(r.submitted_at).toLocaleString()}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             )}

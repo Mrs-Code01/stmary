@@ -166,10 +166,10 @@ export default function TeacherDashboard() {
       {/* Header */}
       <header className="border-b border-white/5 px-6 md:px-12 py-5 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <img src="/images/logo.png" alt="St Mary Logo" className="w-25 h-25 object-contain" />
+          <img src="/images/logo.png" alt="St Mary Logo" className="w-16 h-16 md:w-20 md:h-20 object-contain" />
           <div>
-            <p className="text-white/30 text-[1.5rem] font-mono mt-0.5">
-              {teacher.id} · {displayClass}
+            <p className="text-white/40 text-sm md:text-base font-bold font-mono tracking-wide mt-0.5">
+              {teacher.id} <span className="opacity-50 mx-2">·</span> {displayClass}
             </p>
           </div>
         </div>
