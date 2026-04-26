@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { BookOpen, GraduationCap, Medal, Baby, ChevronDown, Eye, EyeOff } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BookOpen, GraduationCap, Medal, Baby, ChevronDown, Eye, EyeOff, Mail, Lock, User, Hash } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -73,9 +73,15 @@ export default function StaffPortal() {
   const [regEmail,           setRegEmail]           = useState("");
   const [regPassword,        setRegPassword]        = useState("");
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [regClass,           setRegClass]           = useState("");
+  const [regSubject,         setRegSubject]         = useState("");
+  const [regSubjectId,       setRegSubjectId]       = useState("");
   const [showRegPwd,         setShowRegPwd]         = useState(false);
   const [showRegConfirm,     setShowRegConfirm]     = useState(false);
   const [regError,           setRegError]           = useState("");
+
+  const [availableSubjects,   setAvailableSubjects]   = useState([]);
+  const [availableSubjectIds, setAvailableSubjectIds] = useState([]);
 
   // Modal sub-step: "login" | "register" | "regSuccess"
   const [step, setStep] = useState("login");
@@ -94,18 +100,60 @@ export default function StaffPortal() {
     "Senior": "",
   });
 
+  const [userType, setUserType] = useState("class"); // "class" | "subject"
+
   const handleSelectChange = (category, value) =>
     setSelectedClasses((prev) => ({ ...prev, [category]: value }));
 
   const classToId = (name) => name.replace(/\s+/g, "_").toUpperCase();
 
-  const openModal = (categoryTitle) => {
-    const cls = selectedClasses[categoryTitle];
-    if (!cls) { alert("Please select a class first from the dropdown!"); return; }
-    setActiveModalClass(cls);
-    // Reset all state
+  useEffect(() => {
+    if (regClass) {
+      fetchSubjectsForClass(regClass);
+      setRegSubject("");
+      setRegSubjectId("");
+    } else {
+      setAvailableSubjects([]);
+    }
+  }, [regClass]);
+
+  useEffect(() => {
+    if (regSubject && regClass) {
+      fetchSubjectIds(regSubject, regClass);
+      setRegSubjectId("");
+    } else {
+      setAvailableSubjectIds([]);
+    }
+  }, [regSubject, regClass]);
+
+  const fetchSubjectsForClass = async (className) => {
+    const { data } = await supabase
+      .from("subjects")
+      .select("*")
+      .eq("class_name", className)
+      .order("name", { ascending: true });
+    setAvailableSubjects(data || []);
+  };
+
+  const fetchSubjectIds = async (subjectId, className) => {
+    const { data } = await supabase
+      .from("subject_ids")
+      .select("*")
+      .eq("subject_id", subjectId)
+      .eq("class_name", className)
+      .order("external_id", { ascending: true });
+    setAvailableSubjectIds(data || []);
+  };
+
+  const openModal = (categoryTitle, type = "class") => {
+    const cls = categoryTitle === "Subject Access" ? "" : selectedClasses[categoryTitle];
+    if (type === "class" && !cls) { alert("Please select a class first from the dropdown!"); return; }
+    
+    setActiveModalClass(cls || "Subject Teacher");
+    setUserType(type);
     setTeacherId(""); setPassword(""); setShowPwd(false);
-    setRegTeacherId(""); setRegEmail(""); setRegPassword(""); setRegConfirmPassword("");
+    setRegEmail(""); setRegPassword(""); setRegConfirmPassword("");
+    setRegClass(cls); setRegSubject(""); setRegSubjectId(""); setRegTeacherId("");
     setShowRegPwd(false); setShowRegConfirm(false);
     setError(""); setRegError(""); setForgotMode(false);
     setForgotEmail(""); setForgotError(""); setForgotSuccess(false);
@@ -119,9 +167,18 @@ export default function StaffPortal() {
   const regConfirmError = regConfirmPassword && regPassword !== regConfirmPassword
     ? "Passwords do not match." : "";
   const regStrength     = regPassword ? getStrength(regPassword) : null;
-  const regIsValid      =
-    regTeacherId.trim() && regEmail.trim() && regPassword && regConfirmPassword &&
+  
+  const regIsSubjectValid =
+    regEmail.trim() && regPassword && regConfirmPassword &&
+    regClass && regSubject && regSubjectId &&
     !regPwdError && !regConfirmError;
+
+  const regIsClassValid =
+    regEmail.trim() && regPassword && regConfirmPassword &&
+    regClass && regTeacherId.trim() &&
+    !regPwdError && !regConfirmError;
+
+  const regIsValid = userType === "subject" ? regIsSubjectValid : regIsClassValid;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -129,106 +186,182 @@ export default function StaffPortal() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const id      = teacherId.trim().toUpperCase();
-    const classId = classToId(activeModalClass);
+    const logId = teacherId.trim();
 
-    // Fetch teacher record by ID to get email
-    const { data: teacher } = await supabase
-      .from("teachers")
-      .select("*")
-      .eq("id", id)
-      .eq("class_id", classId)
-      .maybeSingle();
+    if (userType === "class") {
+      const cls = activeModalClass;
+      // Fetch teacher by ID and class_id to ensure they match
+      const { data: teacher } = await supabase
+        .from("teachers")
+        .select("*")
+        .eq("id", logId)
+        .eq("class_id", cls)
+        .maybeSingle();
 
-    if (!teacher) {
-      setLoading(false);
-      setError("Teacher ID not found or not assigned to this class.");
-      return;
-    }
-
-    // Authenticate via Supabase Auth
-    const { error: authErr } = await supabase.auth.signInWithPassword({
-      email:    teacher.email,
-      password: password.trim(),
-    });
-    if (authErr) {
-      setLoading(false);
-      if (authErr.message.toLowerCase().includes("email not confirmed") ||
-          authErr.message.toLowerCase().includes("not confirmed")) {
-        setError("Please confirm your email address first. Check your inbox for the verification link.");
-      } else {
-        setError("Incorrect password. Please try again.");
+      if (!teacher) {
+        setLoading(false);
+        setError("Invalid Staff ID or Class selection.");
+        return;
       }
-      return;
-    }
 
-    setLoading(false);
-    document.cookie = `smcs_teacher=${JSON.stringify({ id: teacher.id, class_id: teacher.class_id })}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-    router.push(`/staff/${encodeURIComponent(classId)}/dashboard`);
+      const { error: authErr } = await supabase.auth.signInWithPassword({
+        email: teacher.email,
+        password: password.trim(),
+      });
+
+      if (authErr) {
+        setLoading(false);
+        setError("Incorrect password.");
+        return;
+      }
+
+      setLoading(false);
+      document.cookie = `smcs_teacher=${JSON.stringify({ id: teacher.id, class_id: teacher.class_id, type: "class" })}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      router.push(`/staff/${teacher.class_id.replace(/\s+/g, '_')}/dashboard`);
+    } else {
+      // Subject Teacher Login
+      const { data: teacher } = await supabase.from("subject_teachers").select("*").eq("subject_id", logId).maybeSingle();
+      if (!teacher) {
+        setLoading(false);
+        setError("Subject ID not found.");
+        return;
+      }
+
+      const { error: authErr } = await supabase.auth.signInWithPassword({
+        email: teacher.email,
+        password: password.trim(),
+      });
+
+      if (authErr) {
+        setLoading(false);
+        setError("Incorrect password.");
+        return;
+      }
+
+      setLoading(false);
+      document.cookie = `smcs_teacher=${JSON.stringify({ 
+        id: teacher.subject_id, 
+        class_id: teacher.cclass, 
+        subject: teacher.subject, 
+        type: "subject" 
+      })}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      router.push(`/staff/${teacher.cclass.replace(/\s+/g, '_')}/dashboard`);
+    }
   };
 
   const handleRegister = async () => {
     setRegError("");
     if (!regIsValid) { setRegError("Please complete all fields correctly."); return; }
-    if (!/^SMCSTUTOR\d+$/i.test(regTeacherId.trim())) {
-      setRegError("Teacher ID must follow the format SMCSTUTOR01.");
-      return;
-    }
 
     setLoading(true);
-    const id      = regTeacherId.trim().toUpperCase();
-    const classId = classToId(activeModalClass);
+    const classId = regClass;
+    let loginId = "";
 
-    // Check duplicate
-    const { data: existing } = await supabase
-      .from("teachers")
-      .select("id")
-      .eq("id", id)
-      .maybeSingle();
+    if (userType === "class") {
+      const trimmedId = regTeacherId.trim();
 
-    if (existing) {
+      // 1. Check if this Staff ID is already used by ANY class teacher
+      const { data: idInUse } = await supabase
+        .from("teachers")
+        .select("class_id")
+        .eq("id", trimmedId)
+        .maybeSingle();
+
+      if (idInUse) {
+        setLoading(false);
+        setRegError(`Staff ID "${trimmedId}" is already registered for ${idInUse.class_id}.`);
+        return;
+      }
+
+      // 2. Check if the selected class already has a class teacher
+      const { data: classInUse } = await supabase
+        .from("teachers")
+        .select("id")
+        .eq("class_id", classId)
+        .maybeSingle();
+
+      if (classInUse) {
+        setLoading(false);
+        setRegError(`The class "${classId}" already has a class teacher.`);
+        return;
+      }
+
+      loginId = trimmedId;
+    } else {
+      const trimmedSubId = regSubjectId.trim();
+      // 1. Check if this Subject ID is already used
+      const { data: subIdInUse } = await supabase
+        .from("subject_teachers")
+        .select("subject_id")
+        .eq("subject_id", trimmedSubId)
+        .maybeSingle();
+
+      if (subIdInUse) {
+        setLoading(false);
+        setRegError(`Subject ID "${trimmedSubId}" is already taken.`);
+        return;
+      }
+      loginId = trimmedSubId;
+    }
+
+    const emailCheck = regEmail.trim().toLowerCase();
+
+    // ── Global Email Uniqueness Check ──
+    const { data: studentEmail } = await supabase.from("students").select("id").eq("email", emailCheck).maybeSingle();
+    const { data: teacherEmail } = await supabase.from("teachers").select("id").eq("email", emailCheck).maybeSingle();
+    const { data: subTeacherEmail } = await supabase.from("subject_teachers").select("id").eq("email", emailCheck).maybeSingle();
+
+    if (studentEmail || teacherEmail || subTeacherEmail) {
       setLoading(false);
-      setRegError("This Teacher ID is already registered. Please log in.");
+      setRegError("This email is already associated with an account on this portal.");
       return;
     }
 
-    // Check if email is already in use (across students and teachers)
-    const [studEmail, techEmail] = await Promise.all([
-      supabase.from("students").select("id").eq("email", regEmail.trim().toLowerCase()).maybeSingle(),
-      supabase.from("teachers").select("id").eq("email", regEmail.trim().toLowerCase()).maybeSingle(),
-    ]);
-
-    if (studEmail.data || techEmail.data) {
-      setLoading(false);
-      setRegError("This email is already registered. Use another or log in.");
-      return;
-    }
-
-    // Create Supabase Auth account
-    const { error: authErr } = await supabase.auth.signUp({
-      email:    regEmail.trim().toLowerCase(),
+    let { data: authData, error: authErr } = await supabase.auth.signUp({
+      email: regEmail.trim().toLowerCase(),
       password: regPassword,
     });
 
+    if (authErr && authErr.message.includes("User already registered")) {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: regEmail.trim().toLowerCase(),
+        password: regPassword,
+      });
+      if (signInErr) {
+        setLoading(false);
+        setRegError("Invalid password for existing account.");
+        return;
+      }
+      authErr = null;
+    }
+
     if (authErr) {
       setLoading(false);
-      setRegError("Registration failed: " + authErr.message);
+      setRegError(authErr.message);
       return;
     }
 
-    // Insert into teachers table
-    const { error: dbErr } = await supabase.from("teachers").insert({
-      id,
-      email:    regEmail.trim().toLowerCase(),
-      class_id: classId,
-    });
+    if (userType === "class") {
+      const { error: dbErr } = await supabase.from("teachers").upsert({
+        id: loginId,
+        email: regEmail.trim().toLowerCase(),
+        class_id: classId,
+        subject_id: null,
+      }, { onConflict: 'id' });
+      if (dbErr) { setLoading(false); setRegError(dbErr.message); return; }
+    } else {
+      const { error: dbErr } = await supabase.from("subject_teachers").upsert({
+        cclass: classId,
+        subject: regSubject,
+        email: regEmail.trim().toLowerCase(),
+        subject_id: loginId,
+        password: "HIDDEN_IN_DB_USE_AUTH",
+      }, { onConflict: 'subject_id' });
+      if (dbErr) { setLoading(false); setRegError(dbErr.message); return; }
+    }
 
     setLoading(false);
-    if (dbErr) {
-      setRegError("Profile setup failed: " + dbErr.message);
-      return;
-    }
-
+    setRegTeacherId(loginId);
     setStep("regSuccess");
   };
 
@@ -255,21 +388,21 @@ export default function StaffPortal() {
       icon: <Baby className="w-6 h-6 text-purple-600" />,
       iconBg: "bg-purple-50", borderColor: "border-purple-500",
       buttonBg: "bg-purple-300", hoverBg: "hover:bg-purple-400",
-      classes: ["PRENURSERY", "NURSERY 1", "NURSERY 2", "NURSERY 3"],
+      classes: ["Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3"],
     },
     {
       title: "Lower Basic",
       icon: <BookOpen className="w-6 h-6 text-blue-600" />,
       iconBg: "bg-blue-50", borderColor: "border-blue-500",
       buttonBg: "bg-blue-300", hoverBg: "hover:bg-blue-400",
-      classes: ["BASIC 1","BASIC 2","BASIC 3","BASIC 4","BASIC 5","BASIC 6"],
+      classes: ["Basic 1","Basic 2","Basic 3","Basic 4","Basic 5","Basic 6"],
     },
     {
       title: "Higher Basic",
       icon: <GraduationCap className="w-6 h-6 text-green-600" />,
       iconBg: "bg-green-50", borderColor: "border-green-500",
       buttonBg: "bg-green-300", hoverBg: "hover:bg-green-400",
-      classes: ["BASIC 7","BASIC 8","BASIC 9"],
+      classes: ["Basic 7","Basic 8","Basic 9"],
     },
     {
       title: "Senior",
@@ -278,6 +411,12 @@ export default function StaffPortal() {
       buttonBg: "bg-orange-300", hoverBg: "hover:bg-orange-400",
       classes: ["SS1","SS2","SS3"],
     },
+  ];
+
+  const CLASS_LIST = [
+    "Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3", 
+    "Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6", 
+    "Basic 7", "Basic 8", "Basic 9", "SS1", "SS2", "SS3"
   ];
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -294,60 +433,149 @@ export default function StaffPortal() {
         </button>
       </div>
 
-      {/* Main Container */}
       <div className="flex flex-col items-center w-full max-w-6xl flex-grow justify-center pb-20">
         
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
-        <img
-          src="/images/logo.png"
-          alt="St Mary Logo"
-          className="w-24 h-24 object-contain mb-4 transform transition-transform duration-300 hover:scale-110 hover:-rotate-6"
-        />
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Staff Portal</h1>
-        <p className="text-gray-500 text-lg">Select your class category and login</p>
-      </div>
+          <img
+            src="/images/logo.png"
+            alt="St Mary Logo"
+            className="w-24 h-24 object-contain mb-4 transform transition-transform duration-300 hover:scale-110 hover:-rotate-6"
+          />
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Staff Portal</h1>
+          <p className="text-gray-500 text-lg">Class & Subject Teacher Access</p>
+        </div>
 
-      {/* Category Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
-        {categories.map((item, index) => (
-          <div
-            key={index}
-            className={`border-2 ${item.borderColor} rounded-xl p-8 flex flex-col items-center shadow-sm bg-white hover:-translate-y-1 transition-transform`}
-          >
-            <div className={`${item.iconBg} p-4 rounded-full mb-6`}>{item.icon}</div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">{item.title}</h2>
+        {/* SECTION 1: Class Teacher Access */}
+        <div className="w-full max-w-6xl mb-24">
+          <div className="flex items-center gap-6 mb-12">
+            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
+            <h2 className="text-xl font-bold text-gray-500 px-4 whitespace-nowrap">Class Teacher Access</h2>
+            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
+          </div>
 
-            <div className="relative w-full mb-8">
-              <select
-                value={selectedClasses[item.title]}
-                onChange={(e) => handleSelectChange(item.title, e.target.value)}
-                className="w-full appearance-none bg-white border border-gray-200 rounded-lg py-3 px-4
-                  text-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all cursor-pointer font-medium"
+          {/* TIER 1 */}
+          <div className="flex items-center gap-6 mb-8 mt-12 bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+            <span className="text-2xl">🏫</span>
+            <div className="flex flex-col">
+              <h3 className="text-lg font-black text-blue-800 tracking-tight">Tier 1 Categories</h3>
+              <p className="text-blue-600/70 text-xs font-bold uppercase tracking-wider">Pre-Nursery — Basic 6</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-20">
+            {categories.slice(0, 2).map((item, index) => (
+              <div
+                key={index}
+                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center shadow-sm bg-white hover:-translate-y-2 transition-all duration-300 group`}
               >
-                <option value="">Select class</option>
-                {item.classes.map((cls) => <option key={cls} value={cls}>{cls}</option>)}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                <ChevronDown className="w-4 h-4 text-gray-400" />
+                <div className={`${item.iconBg} p-4 rounded-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                <h2 className="text-2xl font-black text-gray-800 mb-6">{item.title}</h2>
+
+                <div className="relative w-full mb-8">
+                  <select
+                    value={selectedClasses[item.title]}
+                    onChange={(e) => handleSelectChange(item.title, e.target.value)}
+                    className="w-full appearance-none bg-gray-50 border border-gray-100 rounded-xl py-4 px-5
+                      text-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-100 transition-all cursor-pointer font-bold text-sm shadow-sm"
+                  >
+                    <option value="">Select class</option>
+                    {item.classes.map((cls) => <option key={cls} value={cls}>{cls}</option>)}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => openModal(item.title, "class")}
+                  className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-all
+                    ${item.buttonBg} ${item.hoverBg} shadow-lg active:scale-95`}
+                >
+                  Login
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* TIER 2 */}
+          <div className="flex items-center gap-6 mb-8 bg-purple-50/50 p-4 rounded-2xl border border-purple-100">
+            <span className="text-2xl">🎓</span>
+            <div className="flex flex-col">
+              <h3 className="text-lg font-black text-purple-800 tracking-tight">Tier 2 Categories</h3>
+              <p className="text-purple-600/70 text-xs font-bold uppercase tracking-wider">Basic 7 — SS3</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            {categories.slice(2, 4).map((item, index) => (
+              <div
+                key={index}
+                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center shadow-sm bg-white hover:-translate-y-2 transition-all duration-300 group`}
+              >
+                <div className={`${item.iconBg} p-4 rounded-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                <h2 className="text-2xl font-black text-gray-800 mb-6">{item.title}</h2>
+
+                <div className="relative w-full mb-8">
+                  <select
+                    value={selectedClasses[item.title]}
+                    onChange={(e) => handleSelectChange(item.title, e.target.value)}
+                    className="w-full appearance-none bg-gray-50 border border-gray-100 rounded-xl py-4 px-5
+                      text-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-100 transition-all cursor-pointer font-bold text-sm shadow-sm"
+                  >
+                    <option value="">Select class</option>
+                    {item.classes.map((cls) => <option key={cls} value={cls}>{cls}</option>)}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => openModal(item.title, "class")}
+                  className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-all
+                    ${item.buttonBg} ${item.hoverBg} shadow-lg active:scale-95`}
+                >
+                  Login
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* SECTION 2: Subject Teacher Access */}
+        <div className="w-full max-w-6xl">
+          <div className="flex items-center gap-6 mb-12">
+            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
+            <h2 className="text-xl font-bold text-gray-500 px-4 whitespace-nowrap">Subject Teacher Access</h2>
+            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="md:col-start-2 group bg-white border border-gray-100 rounded-[3rem] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] relative overflow-hidden transition-all hover:scale-[1.03] hover:shadow-[0_48px_80px_-12px_rgba(0,0,0,0.12)]">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-blue-50/50 blur-[80px] -mr-16 -mt-16" />
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-20 h-20 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mb-8 shadow-sm">
+                  <BookOpen size={36} strokeWidth={2.5} />
+                </div>
+                <h3 className="text-gray-900 font-black text-2xl mb-3 tracking-tight">Subject Login</h3>
+                <p className="text-gray-400 text-sm text-center mb-10 leading-relaxed font-bold">Manage your specific subject assignments across all classes.</p>
+                <button 
+                  onClick={() => openModal("Subject Access", "subject")}
+                  className="w-full bg-indigo-600 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95"
+                >
+                  Login
+                </button>
               </div>
             </div>
-
-            <button
-              onClick={() => openModal(item.title)}
-              className={`w-full py-3 rounded-lg text-white font-semibold text-lg transition-colors
-                ${item.buttonBg} ${item.hoverBg} shadow-sm active:scale-95`}
-            >
-              Login
-            </button>
           </div>
-        ))}
+        </div>
       </div>
 
       {/* ── Modal ── */}
       {activeModalClass && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-white border border-gray-200 rounded-3xl p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+          <div className="w-full max-w-md bg-white border border-gray-100 rounded-[2rem] p-8 md:p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scrollbar">
 
             <button
               onClick={closeModal}
@@ -357,11 +585,9 @@ export default function StaffPortal() {
             </button>
 
             {/* Modal header */}
-            <div className="mb-6 mt-2">
-              <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-1">
-                {step === "register" ? "New Account" : "Staff Login"}
-              </p>
-              <h2 className="text-2xl font-black text-gray-900">{activeModalClass}</h2>
+            <div className="mb-8">
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{step === 'register' ? 'New Account' : 'Portal Access'}</p>
+              <h2 className="text-3xl font-black text-gray-800 tracking-tight">{step === 'register' ? activeModalClass : 'Login Access'}</h2>
             </div>
 
             {/* ── LOGIN STEP ── */}
@@ -369,16 +595,16 @@ export default function StaffPortal() {
               <>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
-                      Teacher ID
+                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                      {userType === 'class' ? 'Teacher ID' : 'Subject ID'}
                     </label>
                     <input
                       type="text"
                       value={teacherId}
                       onChange={(e) => setTeacherId(e.target.value)}
-                      placeholder="e.g. SMCSTUTOR01"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900
-                        placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono"
+                      placeholder={userType === 'class' ? "e.g. SMCSTUTOR01" : "e.g. MATH-001"}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900
+                        placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono font-bold"
                     />
                   </div>
 
@@ -433,7 +659,7 @@ export default function StaffPortal() {
                 </form>
 
                 <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                  <p className="text-gray-500 text-xs font-medium mb-3">First time on this portal?</p>
+                  <p className="text-gray-500 text-xs font-medium mb-3">Not registered yet?</p>
                   <button
                     onClick={() => setStep("register")}
                     className="w-full bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white
@@ -516,110 +742,121 @@ export default function StaffPortal() {
                 >
                   ← Back to Login
                 </button>
-                <p className="text-gray-500 text-xs mb-5 leading-relaxed">
-                  Create your account for <span className="font-bold text-gray-700">{activeModalClass}</span>.
+                <p className="text-gray-500 text-xs mb-5 leading-relaxed font-bold">
+                  {userType === 'class' ? `Enter your details as the Class Teacher for ${activeModalClass}.` : 'Create your account using your Subject ID.'}
                 </p>
 
-                <div className="space-y-4">
-                  {/* Teacher ID */}
+                <div className="space-y-5">
                   <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
-                      Teacher ID
-                    </label>
-                    <input
-                      type="text"
-                      value={regTeacherId}
-                      onChange={(e) => setRegTeacherId(e.target.value)}
-                      placeholder="e.g. SMCSTUTOR01"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900
-                        placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors text-sm font-mono"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
-                      Email Address
-                    </label>
+                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Email Address</label>
                     <input
                       type="email"
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
                       placeholder="e.g. teacher@school.com"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900
-                        placeholder-gray-400 focus:outline-none focus:border-orange-500 transition-colors text-sm"
+                      className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
                     />
                   </div>
 
-                  {/* Password */}
                   <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
-                      Password
-                    </label>
+                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Class</label>
+                    <div className="relative">
+                      <select
+                        value={regClass}
+                        onChange={(e) => setRegClass(e.target.value)}
+                        className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                      >
+                        <option value="">{regClass ? regClass : "Choose Class..."}</option>
+                        {CLASS_LIST.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                      </select>
+                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {userType === "class" ? (
+                    <div>
+                      <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Tutor ID</label>
+                      <input
+                        type="text"
+                        value={regTeacherId}
+                        onChange={(e) => setRegTeacherId(e.target.value)}
+                        placeholder="e.g. SMCSTUTOR01"
+                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm font-mono font-bold"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      {regClass && (
+                        <div>
+                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Assigned Subject</label>
+                          <div className="relative">
+                            <select
+                              value={regSubject}
+                              onChange={(e) => setRegSubject(e.target.value)}
+                              className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                            >
+                              <option value="">Select Subject...</option>
+                              {availableSubjects.map(sub => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
+                            </select>
+                            <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                      )}
+                      {regSubject && (
+                        <div>
+                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Subject ID</label>
+                          <div className="relative">
+                            <select
+                              value={regSubjectId}
+                              onChange={(e) => setRegSubjectId(e.target.value)}
+                              className="w-full appearance-none bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                            >
+                              <option value="">Link Subject ID...</option>
+                              {availableSubjectIds.map(id => (
+                                <option key={id.id} value={id.external_id}>
+                                  {id.external_id}
+                                </option>
+                              ))}
+                            </select>
+                            <Hash size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  <div>
+                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Password</label>
                     <div className="relative">
                       <input
                         type={showRegPwd ? "text" : "password"}
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
                         placeholder="Min. 8 chars, letter + number"
-                        className={`w-full bg-gray-50 border rounded-xl px-4 py-3 pr-11 text-gray-900
-                          placeholder-gray-400 focus:outline-none transition-colors text-sm
-                          ${regPassword && regPwdError
-                            ? "border-red-300 focus:border-red-400"
-                            : "border-gray-200 focus:border-orange-500"}`}
+                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowRegPwd((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                        tabIndex={-1}
-                      >
-                        {showRegPwd ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
+                      <button onClick={()=>setShowRegPwd(!showRegPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16}/></button>
                     </div>
-                    {regPassword && regPwdError && (
-                      <p className="text-red-500 text-xs mt-1.5 font-medium">{regPwdError}</p>
-                    )}
-                    {regPassword && !regPwdError && regStrength && <StrengthBar strength={regStrength} />}
+                    {regPassword && regStrength && <StrengthBar strength={regStrength} />}
                   </div>
 
-                  {/* Confirm Password */}
                   <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
-                      Confirm Password
-                    </label>
+                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Confirm Password</label>
                     <div className="relative">
                       <input
                         type={showRegConfirm ? "text" : "password"}
                         value={regConfirmPassword}
                         onChange={(e) => setRegConfirmPassword(e.target.value)}
                         placeholder="Re-enter your password"
-                        className={`w-full bg-gray-50 border rounded-xl px-4 py-3 pr-11 text-gray-900
-                          placeholder-gray-400 focus:outline-none transition-colors text-sm
-                          ${regConfirmError
-                            ? "border-red-300 focus:border-red-400"
-                            : "border-gray-200 focus:border-orange-500"}`}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowRegConfirm((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                        tabIndex={-1}
-                      >
-                        {showRegConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
+                      <button onClick={()=>setShowRegConfirm(!showRegConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16}/></button>
                     </div>
-                    {regConfirmError && (
-                      <p className="text-red-500 text-xs mt-1.5 font-medium">{regConfirmError}</p>
-                    )}
-                    {regConfirmPassword && !regConfirmError && (
-                      <p className="text-green-600 text-xs mt-1.5 font-bold">✓ Passwords match</p>
-                    )}
                   </div>
                 </div>
 
                 {regError && (
-                  <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-500 text-xs">
+                  <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-500 text-xs font-bold">
                     {regError}
                   </div>
                 )}
@@ -627,11 +864,11 @@ export default function StaffPortal() {
                 <button
                   onClick={handleRegister}
                   disabled={loading || !regIsValid}
-                  className="w-full mt-6 bg-orange-500 text-white py-3.5 rounded-xl font-bold uppercase
-                    tracking-wider text-sm hover:bg-orange-600 transition-colors active:scale-95
-                    disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full mt-8 bg-[#ffb07c] text-white py-4 rounded-xl font-black uppercase
+                    tracking-widest text-sm hover:opacity-90 transition-all active:scale-95
+                    disabled:opacity-50 flex items-center justify-center gap-3 shadow-md"
                 >
-                  {loading ? <><Spinner /> Creating Account…</> : "Create Account →"}
+                  {loading ? <Spinner /> : "Create Account →"}
                 </button>
               </>
             )}
@@ -650,7 +887,6 @@ export default function StaffPortal() {
                 </div>
                 <button
                   onClick={() => {
-                    // Pre-fill Teacher ID for login convenience
                     setTeacherId(regTeacherId);
                     setStep("login");
                   }}
@@ -665,7 +901,6 @@ export default function StaffPortal() {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 }

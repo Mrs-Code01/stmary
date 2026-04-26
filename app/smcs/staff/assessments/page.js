@@ -278,7 +278,7 @@ export default function StaffAssessments() {
       <header className="border-b border-white/5 px-6 md:px-12 py-5 flex items-center justify-between sticky top-0 bg-[#020813]/80 backdrop-blur-xl z-50">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => router.replace("/staff/" + encodeURIComponent(teacher.class_id) + "/dashboard")}
+            onClick={() => router.replace("/staff/" + teacher.class_id.replace(/\s+/g, "_") + "/dashboard")}
             className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-all border border-white/5 flex items-center justify-center"
           >
             <ArrowLeft size={18} />

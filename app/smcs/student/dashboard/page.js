@@ -40,11 +40,12 @@ export default function StudentDashboard() {
   const fetchRealMetrics = async (s) => {
     let normalizedClassId = s.class_id.toUpperCase().replace(/\s+|_/g, '').replace(/([A-Z]+)(\d+.*)/, '$1_$2');
 
-    // 1. Fetch total assignments for class
+    // 1. Fetch total assignments for class (only published)
     const { data: allAssignments } = await supabase
       .from("assignments")
       .select("id, type, subject, month")
-      .eq("class_id", normalizedClassId);
+      .eq("class_id", normalizedClassId)
+      .eq("status", "published");
 
     // 2. Fetch submissions for student (School assignments)
     const { data: mySubmissions } = await supabase

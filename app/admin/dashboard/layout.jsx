@@ -9,7 +9,8 @@ import {
   Image as GalleryIcon,
   FileText,
   LogOut,
-  Menu
+  Menu,
+  BookOpen
 } from "lucide-react";
 
 export default function AdminDashboardLayout({ children }) {
@@ -102,6 +103,16 @@ export default function AdminDashboardLayout({ children }) {
             >
               <FileText size={18} />
               Lesson Notes
+            </Link>
+            <Link
+              href="/admin/dashboard/subjects"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors ${pathname.startsWith("/admin/dashboard/subjects")
+                ? "bg-blue-600/10 text-blue-400 border-r-4 border-blue-600"
+                : "hover:bg-slate-800"
+                }`}
+            >
+              <BookOpen size={18} />
+              Subjects
             </Link>
           </div>
         </nav>

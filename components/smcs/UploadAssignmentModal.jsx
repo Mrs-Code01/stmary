@@ -1,17 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { FaTimes, FaPlus, FaTrash } from "react-icons/fa";
-
-const SUBJECTS = [
-  "Mathematics", "English Language", "Basic Science", "Social Studies",
-  "Civic Education", "Computer Science", "Agricultural Science",
-  "Business Studies", "Home Economics", "Physical Education",
-  "French", "Yoruba", "Igbo", "Hausa", "Music", "Fine Art",
-  "Economics", "Government", "Biology", "Chemistry", "Physics",
-  "Geography", "Commerce", "Accounting", "Literature", "Other"
-];
 
 const TECH_COURSES = [
   "Prompt Engineering", 
@@ -34,13 +25,37 @@ function newQuestion() {
 }
 
 export default function UploadAssignmentModal({ type, classId, initialData, onClose, onRefresh }) {
-  const isTech = type === "tech_assessment";
-  const [subject, setSubject] = useState(initialData?.subject || (isTech ? TECH_COURSES[0] : SUBJECTS[0]));
-  const [month, setMonth] = useState(initialData?.month || 1);
   const [questions, setQuestions] = useState(initialData?.questions || [newQuestion()]);
+  const [availableSubjects, setAvailableSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [lastWasDraft, setLastWasDraft] = useState(false);
+
+  const isTech = type === "tech_assessment";
+  const [subject, setSubject] = useState(initialData?.subject || "");
+
+  useEffect(() => {
+    if (!isTech) {
+      fetchSubjects();
+    } else {
+      if (!subject) setSubject(TECH_COURSES[0]);
+    }
+  }, []);
+
+  const fetchSubjects = async () => {
+    const rawCid = classId.replace('_', '');
+    const { data } = await supabase
+      .from("subjects")
+      .select("*")
+      .or(`class_name.eq.${classId},class_name.eq.${rawCid}`)
+      .order("name", { ascending: true });
+    
+    if (data && data.length > 0) {
+      setAvailableSubjects(data);
+      if (!subject) setSubject(data[0].name);
+    }
+  };
 
   const label = type === "school_assignment" ? "School Assignment" : "Tech Assessment";
   const actionText = initialData ? "Update" : "Upload";
@@ -55,7 +70,7 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
   const removeQuestion = (idx) =>
     setQuestions((prev) => prev.filter((_, i) => i !== idx));
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (isDraft = false) => {
     setError("");
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
@@ -68,71 +83,63 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
           setError(`Question ${i + 1}: at least options A and B are required.`);
           return;
         }
-        if (!q.correct_answer) {
+        if (!q.correct_answer && !isDraft) {
           setError(`Question ${i + 1}: please select the correct answer.`);
-          return;
-        }
-      } else {
-        if (!q.correct_answer.trim()) {
-          setError(`Question ${i + 1}: correct answer phrase is required.`);
           return;
         }
       }
     }
 
     setLoading(true);
+    const assignmentStatus = isDraft ? 'draft' : 'published';
 
     if (initialData) {
       const { error: dbErr } = await supabase
         .from("assignments")
-        .update({ subject, questions, month: isTech ? month : 1 })
+        .update({ subject, questions, status: assignmentStatus })
         .eq("id", initialData.id);
 
-      setLoading(false);
       if (dbErr) {
+        setLoading(false);
         setError("Update failed: " + dbErr.message);
         return;
       }
     } else {
       const normalizedClassId = classId.toUpperCase().replace(/\s+|_/g, '').replace(/([A-Z]+)(\d+.*)/, '$1_$2');
-      const { error: dbErr } = await supabase.from("assignments").insert({
+      const { data: newAss, error: dbErr } = await supabase.from("assignments").insert({
         class_id: normalizedClassId,
         subject,
         type,
         questions,
-        month: isTech ? month : 1
-      });
+        status: assignmentStatus,
+        month: 1
+      }).select().single();
 
-      setLoading(false);
       if (dbErr) {
-        setError("Upload failed: " + dbErr.message);
+        setLoading(false);
+        setError("Save failed: " + dbErr.message);
         return;
       }
 
-      // ── Notification Trigger ────────────────────────────────────────────────
-      // 1. Fetch target students
-      let studentQuery = supabase.from("students").select("id");
-      if (isTech) {
-        studentQuery = studentQuery.eq("tech_course", subject);
-      } else {
-        studentQuery = studentQuery.eq("class_id", classId);
-      }
-      
-      const { data: students } = await studentQuery;
+      // Only notify if NOT a draft
+      if (!isDraft) {
+        let studentQuery = supabase.from("students").select("id").eq("class_id", classId);
+        const { data: students } = await studentQuery;
 
-      if (students && students.length > 0) {
-        const notifs = students.map(s => ({
-          student_id: s.id,
-          type: isTech ? "assessment" : "assignment",
-          title: `New ${isTech ? "Tech Assessment" : "Assignment"}`,
-          message: isTech 
-            ? `New tech assessment for ${subject} (Month ${month}) is ready.`
-            : `A new ${subject} assignment has been uploaded for your class.`,
-        }));
-        await supabase.from("student_notifications").insert(notifs);
+        if (students && students.length > 0) {
+          const notifs = students.map(s => ({
+            student_id: s.id,
+            type: "assignment",
+            title: `New Assignment: ${subject}`,
+            message: `A new ${subject} assignment has been uploaded for your class.`,
+          }));
+          await supabase.from("student_notifications").insert(notifs);
+        }
       }
     }
 
+    setLoading(false);
+    setLastWasDraft(isDraft);
     setSuccess(true);
     if (onRefresh) onRefresh();
   };
@@ -154,9 +161,14 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
         {success ? (
           <div className="px-8 py-12 text-center space-y-4">
             <p className="text-5xl">✅</p>
-            <p className="text-white font-black text-xl">{initialData ? "Updated" : "Uploaded"} Successfully!</p>
+            <p className="text-white font-black text-xl">
+              {lastWasDraft ? "Saved as Draft" : `${initialData ? "Updated" : "Uploaded"} Successfully!`}
+            </p>
             <p className="text-white/40 text-sm">
-              The {label.toLowerCase()} has been saved and is visible to all students in this class.
+              {lastWasDraft 
+                ? "This assignment has been saved but is NOT yet visible to students."
+                : `The ${label.toLowerCase()} has been saved and is now visible to all students in this class.`
+              }
             </p>
             <button
               onClick={onClose}
@@ -178,9 +190,15 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
                   onChange={(e) => setSubject(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#0096ff] transition-colors text-sm"
                 >
-                  {(isTech ? TECH_COURSES : SUBJECTS).map((s) => (
-                    <option key={s} value={s} style={{ background: "#00142a" }}>{s}</option>
-                  ))}
+                  {isTech ? (
+                    TECH_COURSES.map((s) => (
+                      <option key={s} value={s} style={{ background: "#00142a" }}>{s}</option>
+                    ))
+                  ) : (
+                    availableSubjects.map((s) => (
+                      <option key={s.id} value={s.name} style={{ background: "#00142a" }}>{s.name}</option>
+                    ))
+                  )}
                 </select>
               </div>
 
@@ -192,7 +210,7 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
                     onChange={(e) => setMonth(parseInt(e.target.value))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#0096ff] transition-colors text-sm"
                   >
-                    {[1, 2, 3].map((m) => (
+                    {[1, 2, 3, 4, 5].map((m) => (
                       <option key={m} value={m} style={{ background: "#00142a" }}>Month {m}</option>
                     ))}
                   </select>
@@ -317,19 +335,20 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
             )}
 
             {/* Submit */}
-            <div className="flex gap-3 pb-2">
+            <div className="flex gap-4 pb-2">
               <button
-                onClick={onClose}
-                className="flex-1 bg-white/5 border border-white/10 text-white/50 py-3 rounded-xl font-bold text-sm hover:text-white transition-all"
+                onClick={() => handleSubmit(true)}
+                disabled={loading}
+                className="flex-1 bg-white/[0.05] border border-white/10 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl hover:bg-white/[0.1] transition-all active:scale-95 disabled:opacity-50"
               >
-                Cancel
+                {loading ? "..." : "Save as Draft"}
               </button>
               <button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(false)}
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-[#cc5500] to-[#ff8c00] text-white py-3 rounded-xl font-black text-sm uppercase tracking-wider hover:shadow-[0_8px_24px_rgba(204,85,0,0.4)] transition-all active:scale-95 disabled:opacity-50"
+                className="flex-[2] bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:shadow-[0_8px_24px_rgba(249,115,22,0.3)] transition-all active:scale-95 disabled:opacity-50"
               >
-                {loading ? "Saving…" : `${actionText} ${label}`}
+                {loading ? "Processing…" : `Finalize & Publish`}
               </button>
             </div>
           </div>

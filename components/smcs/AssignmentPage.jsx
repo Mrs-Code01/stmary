@@ -42,7 +42,8 @@ export default function AssignmentPage({ type }) {
       .from("assignments")
       .select("*")
       .eq("class_id", normalizedClassId)
-      .eq("type", type);
+      .eq("type", type)
+      .eq("status", "published");
 
     // If tech assessment, filter by student's specific tech course
     const s = getStudentFromCookie();
