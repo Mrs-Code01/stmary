@@ -10,7 +10,8 @@ import {
   FileText,
   LogOut,
   Menu,
-  BookOpen
+  BookOpen,
+  Laptop
 } from "lucide-react";
 
 export default function AdminDashboardLayout({ children }) {
@@ -113,6 +114,16 @@ export default function AdminDashboardLayout({ children }) {
             >
               <BookOpen size={18} />
               Subjects
+            </Link>
+            <Link
+              href="/admin/dashboard/tech-courses"
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-colors ${pathname.startsWith("/admin/dashboard/tech-courses")
+                ? "bg-blue-600/10 text-blue-400 border-r-4 border-blue-600"
+                : "hover:bg-slate-800"
+                }`}
+            >
+              <Laptop size={18} />
+              Tech Courses
             </Link>
           </div>
         </nav>

@@ -38,6 +38,18 @@ export default function AssignmentPage({ type }) {
     setLoading(true);
     let normalizedClassId = classId.toUpperCase().replace(/\s+|_/g, '').replace(/([A-Z]+)(\d+.*)/, '$1_$2');
     
+    // Tech Group Mapping logic
+    if (type === "tech_assessment") {
+      const name = classId.toUpperCase().replace(/\s+|_/g, '');
+      if (name.includes("BASIC")) {
+        const num = parseInt(name.match(/\d+/)?.[0]);
+        if (num >= 1 && num <= 6) normalizedClassId = "BASIC_1_-_6";
+        else if (num >= 7 && num <= 9) normalizedClassId = "BASIC_7_-_9";
+      } else if (name.includes("SS")) {
+        normalizedClassId = "SS1_-_SS3";
+      }
+    }
+
     let query = supabase
       .from("assignments")
       .select("*")

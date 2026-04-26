@@ -24,7 +24,7 @@ function getTeacherFromCookie() {
 export default function TeacherDashboard() {
   const router = useRouter();
   const params = useParams();
-  const rawClassId = decodeURIComponent(params.id || "");
+  const rawClassId = decodeURIComponent(params.classId || "");
   
   // Normalizes IDs like "Nursery 3", "nursery 3", or "NURSERY_3" -> "NURSERY_3"
   const normalize = (id) => {
@@ -37,6 +37,7 @@ export default function TeacherDashboard() {
   };
   
   const classId = normalize(rawClassId);
+  const isGroup = ["BASIC_1_-_6", "BASIC_7_-_9", "SS1_-_SS3"].includes(classId);
 
   const [teacher, setTeacher] = useState(null);
   const [modal, setModal] = useState(null); // null | 'school' | 'tech' | 'result'
@@ -73,7 +74,7 @@ export default function TeacherDashboard() {
     setDataLoading(true);
     const activeTeacher = tInfo || teacher || getTeacherFromCookie();
     // Normalize the class ID for database queries
-    const normalizedCid = cid.toUpperCase().replace(/\s+|_/g, '').replace(/([A-Z]+)(\d+.*)/, '$1_$2');
+    const normalizedCid = isGroup ? classId : classId.toUpperCase().replace(/\s+|_/g, '').replace(/([A-Z]+)(\d+.*)/, '$1_$2');
     
     let filterSubject = "";
     if (activeTeacher?.type === 'subject' && activeTeacher.subject) {
@@ -81,6 +82,12 @@ export default function TeacherDashboard() {
       if (sub) {
         filterSubject = sub.name;
         setSubjectName(sub.name);
+      }
+    } else if (activeTeacher?.type === 'tech' && activeTeacher.subject) {
+      const { data: techSub } = await supabase.from("tech_courses").select("name").eq("id", activeTeacher.subject).maybeSingle();
+      if (techSub) {
+        filterSubject = techSub.name;
+        setSubjectName(techSub.name);
       }
     }
 
@@ -185,12 +192,12 @@ export default function TeacherDashboard() {
     setEditItem(null);
   };
 
-  const displayClass = classId.replace(/_/g, " ");
+  const displayClass = (isGroup ? rawClassId : classId).replace(/_/g, ' ');
 
   const isTier1 = [
     "Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3", 
     "Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6"
-  ].includes(classId);
+  ].map(normalize).includes(classId) || classId === "BASIC_1_-_6";
 
   const teacherType = teacher?.type;
   const actions = [
@@ -213,13 +220,22 @@ export default function TeacherDashboard() {
       visible: (teacherType === "class" && isTier1) || teacherType === "subject",
     },
     {
+      id: "tech",
+      label: "Upload Tech Assessment",
+      desc: "Add questions for your designated tech course.",
+      icon: <FaLaptopCode size={24} />,
+      color: "from-blue-500 to-cyan-500",
+      glow: "rgba(6,182,212,0.35)",
+      visible: teacherType === "tech",
+    },
+    {
       id: "lessonNote",
       label: "Upload Lesson Notes",
       desc: "Share lesson documents (PDF/Word) with your students.",
       icon: <FaFileAlt size={24} />,
       color: "from-emerald-500 to-emerald-600",
       glow: "rgba(16,185,129,0.35)",
-      visible: (teacherType === "class" && isTier1) || teacherType === "subject",
+      visible: (teacherType === "class" && isTier1) || teacherType === "subject" || teacherType === "tech",
     },
   ].filter(a => a.visible);
 
@@ -388,7 +404,7 @@ export default function TeacherDashboard() {
           initialData={editItem}
           onClose={handleModalClose}
           onRefresh={() => fetchData(classId)}
-          forcedSubject={teacher?.type === 'subject' ? subjectName : ""}
+          forcedSubject={(teacher?.type === 'subject' || teacher?.type === 'tech') ? subjectName : ""}
         />
       )}
       {modal === "result" && (

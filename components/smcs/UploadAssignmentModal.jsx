@@ -4,14 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { FaTimes, FaPlus, FaTrash } from "react-icons/fa";
 
-const TECH_COURSES = [
-  "Prompt Engineering", 
-  "Website Development", 
-  "AI Automation", 
-  "AI Chatbots", 
-  "AI Video Creation", 
-  "Blockchain Development"
-];
+// Removed static TECH_COURSES
 
 const OPTIONS = ["A", "B", "C", "D", "E"];
 
@@ -24,7 +17,7 @@ function newQuestion() {
   };
 }
 
-export default function UploadAssignmentModal({ type, classId, initialData, onClose, onRefresh }) {
+export default function UploadAssignmentModal({ type, classId, initialData, onClose, onRefresh, forcedSubject }) {
   const [questions, setQuestions] = useState(initialData?.questions || [newQuestion()]);
   const [availableSubjects, setAvailableSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -34,25 +27,50 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
 
   const isTech = type === "tech_assessment";
   const [subject, setSubject] = useState(initialData?.subject || "");
+  const [month, setMonth] = useState(initialData?.month || 1);
 
   useEffect(() => {
     if (!isTech) {
-      fetchSubjects();
+      if (forcedSubject) {
+        setAvailableSubjects([{ id: 'forced', name: forcedSubject }]);
+        if (!subject) setSubject(forcedSubject);
+      } else {
+        fetchSubjects();
+      }
     } else {
-      if (!subject) setSubject(TECH_COURSES[0]);
+      if (forcedSubject) {
+        setAvailableSubjects([{ id: 'forced', name: forcedSubject }]);
+        if (!subject) setSubject(forcedSubject);
+      } else {
+        fetchTechCourses();
+      }
     }
-  }, []);
+  }, [forcedSubject, isTech]);
 
   const fetchSubjects = async () => {
-    const rawCid = classId.replace('_', '');
+    const spaceCid = classId.replace(/_/g, " ");
     const { data } = await supabase
       .from("subjects")
       .select("*")
-      .or(`class_name.eq.${classId},class_name.eq.${rawCid}`)
+      .or(`class_name.ilike.${classId},class_name.ilike.${spaceCid}`)
       .order("name", { ascending: true });
     
     if (data && data.length > 0) {
       setAvailableSubjects(data);
+      if (!subject) setSubject(data[0].name);
+    }
+  };
+
+  const fetchTechCourses = async () => {
+    const spaceCid = classId.replace(/_/g, " ");
+    const { data } = await supabase
+      .from("tech_courses")
+      .select("*")
+      .or(`class_name.ilike.${classId},class_name.ilike.${spaceCid}`)
+      .order("name", { ascending: true });
+    
+    if (data && data.length > 0) {
+      setAvailableSubjects(data || []);
       if (!subject) setSubject(data[0].name);
     }
   };
@@ -190,15 +208,9 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
                   onChange={(e) => setSubject(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#0096ff] transition-colors text-sm"
                 >
-                  {isTech ? (
-                    TECH_COURSES.map((s) => (
-                      <option key={s} value={s} style={{ background: "#00142a" }}>{s}</option>
-                    ))
-                  ) : (
-                    availableSubjects.map((s) => (
-                      <option key={s.id} value={s.name} style={{ background: "#00142a" }}>{s.name}</option>
-                    ))
-                  )}
+                  {availableSubjects.map((s) => (
+                    <option key={s.id || s.name || s} value={s.name || s} style={{ background: "#00142a" }}>{s.name || s}</option>
+                  ))}
                 </select>
               </div>
 
@@ -210,7 +222,7 @@ export default function UploadAssignmentModal({ type, classId, initialData, onCl
                     onChange={(e) => setMonth(parseInt(e.target.value))}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#0096ff] transition-colors text-sm"
                   >
-                    {[1, 2, 3, 4, 5].map((m) => (
+                    {[1, 2, 3].map((m) => (
                       <option key={m} value={m} style={{ background: "#00142a" }}>Month {m}</option>
                     ))}
                   </select>

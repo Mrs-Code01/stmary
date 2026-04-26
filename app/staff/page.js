@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { BookOpen, GraduationCap, Medal, Baby, ChevronDown, Eye, EyeOff, Mail, Lock, User, Hash } from 'lucide-react';
+import { BookOpen, GraduationCap, Medal, Baby, ChevronDown, Eye, EyeOff, Mail, Lock, User, Hash, Laptop } from 'lucide-react';
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { FaTimes } from "react-icons/fa";
@@ -109,26 +109,43 @@ export default function StaffPortal() {
 
   useEffect(() => {
     if (regClass) {
-      fetchSubjectsForClass(regClass);
+      if (userType === 'tech') {
+        fetchTechCoursesForClass(regClass);
+      } else {
+        fetchSubjectsForClass(regClass);
+      }
       setRegSubject("");
       setRegSubjectId("");
     } else {
       setAvailableSubjects([]);
     }
-  }, [regClass]);
+  }, [regClass, userType]);
 
   useEffect(() => {
     if (regSubject && regClass) {
-      fetchSubjectIds(regSubject, regClass);
+      if (userType === 'tech') {
+        fetchTechCourseIds(regSubject, regClass);
+      } else {
+        fetchSubjectIds(regSubject, regClass);
+      }
       setRegSubjectId("");
     } else {
       setAvailableSubjectIds([]);
     }
-  }, [regSubject, regClass]);
+  }, [regSubject, regClass, userType]);
 
   const fetchSubjectsForClass = async (className) => {
     const { data } = await supabase
       .from("subjects")
+      .select("*")
+      .eq("class_name", className)
+      .order("name", { ascending: true });
+    setAvailableSubjects(data || []);
+  };
+
+  const fetchTechCoursesForClass = async (className) => {
+    const { data } = await supabase
+      .from("tech_courses")
       .select("*")
       .eq("class_name", className)
       .order("name", { ascending: true });
@@ -140,6 +157,16 @@ export default function StaffPortal() {
       .from("subject_ids")
       .select("*")
       .eq("subject_id", subjectId)
+      .eq("class_name", className)
+      .order("external_id", { ascending: true });
+    setAvailableSubjectIds(data || []);
+  };
+
+  const fetchTechCourseIds = async (courseId, className) => {
+    const { data } = await supabase
+      .from("tech_course_ids")
+      .select("*")
+      .eq("tech_course_id", courseId)
       .eq("class_name", className)
       .order("external_id", { ascending: true });
     setAvailableSubjectIds(data || []);
@@ -178,7 +205,7 @@ export default function StaffPortal() {
     regClass && regTeacherId.trim() &&
     !regPwdError && !regConfirmError;
 
-  const regIsValid = userType === "subject" ? regIsSubjectValid : regIsClassValid;
+  const regIsValid = userType === "class" ? regIsClassValid : regIsSubjectValid;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -216,9 +243,9 @@ export default function StaffPortal() {
       }
 
       setLoading(false);
-      document.cookie = `smcs_teacher=${JSON.stringify({ id: teacher.id, class_id: teacher.class_id, type: "class" })}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      router.push(`/staff/${teacher.class_id.replace(/\s+/g, '_')}/dashboard`);
-    } else {
+      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ id: teacher.id, class_id: teacher.class_id, type: "class" }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      router.push(`/staff/${teacher.class_id}/dashboard`);
+    } else if (userType === "subject") {
       // Subject Teacher Login
       const { data: teacher } = await supabase.from("subject_teachers").select("*").eq("subject_id", logId).maybeSingle();
       if (!teacher) {
@@ -239,13 +266,41 @@ export default function StaffPortal() {
       }
 
       setLoading(false);
-      document.cookie = `smcs_teacher=${JSON.stringify({ 
+      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ 
         id: teacher.subject_id, 
         class_id: teacher.cclass, 
         subject: teacher.subject, 
         type: "subject" 
-      })}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      router.push(`/staff/${teacher.cclass.replace(/\s+/g, '_')}/dashboard`);
+      }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      router.push(`/staff/${teacher.cclass}/dashboard`);
+    } else if (userType === "tech") {
+      // Tech Teacher Login
+      const { data: teacher } = await supabase.from("tech_teachers").select("*").eq("course_id", logId).maybeSingle();
+      if (!teacher) {
+        setLoading(false);
+        setError("Tech Course ID not found.");
+        return;
+      }
+
+      const { error: authErr } = await supabase.auth.signInWithPassword({
+        email: teacher.email,
+        password: password.trim(),
+      });
+
+      if (authErr) {
+        setLoading(false);
+        setError("Incorrect password.");
+        return;
+      }
+
+      setLoading(false);
+      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ 
+        id: teacher.course_id, 
+        class_id: teacher.cclass, 
+        subject: teacher.course, 
+        type: "tech" 
+      }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+      router.push(`/staff/${teacher.cclass}/dashboard`);
     }
   };
 
@@ -287,7 +342,7 @@ export default function StaffPortal() {
       }
 
       loginId = trimmedId;
-    } else {
+    } else if (userType === "subject") {
       const trimmedSubId = regSubjectId.trim();
       // 1. Check if this Subject ID is already used
       const { data: subIdInUse } = await supabase
@@ -302,6 +357,21 @@ export default function StaffPortal() {
         return;
       }
       loginId = trimmedSubId;
+    } else if (userType === "tech") {
+      const trimmedTechId = regSubjectId.trim();
+      // 1. Check if this Tech ID is already used
+      const { data: techIdInUse } = await supabase
+        .from("tech_teachers")
+        .select("course_id")
+        .eq("course_id", trimmedTechId)
+        .maybeSingle();
+
+      if (techIdInUse) {
+        setLoading(false);
+        setRegError(`Tech Course ID "${trimmedTechId}" is already taken.`);
+        return;
+      }
+      loginId = trimmedTechId;
     }
 
     const emailCheck = regEmail.trim().toLowerCase();
@@ -310,8 +380,9 @@ export default function StaffPortal() {
     const { data: studentEmail } = await supabase.from("students").select("id").eq("email", emailCheck).maybeSingle();
     const { data: teacherEmail } = await supabase.from("teachers").select("id").eq("email", emailCheck).maybeSingle();
     const { data: subTeacherEmail } = await supabase.from("subject_teachers").select("id").eq("email", emailCheck).maybeSingle();
+    const { data: techTeacherEmail } = await supabase.from("tech_teachers").select("id").eq("email", emailCheck).maybeSingle();
 
-    if (studentEmail || teacherEmail || subTeacherEmail) {
+    if (studentEmail || teacherEmail || subTeacherEmail || techTeacherEmail) {
       setLoading(false);
       setRegError("This email is already associated with an account on this portal.");
       return;
@@ -349,7 +420,7 @@ export default function StaffPortal() {
         subject_id: null,
       }, { onConflict: 'id' });
       if (dbErr) { setLoading(false); setRegError(dbErr.message); return; }
-    } else {
+    } else if (userType === "subject") {
       const { error: dbErr } = await supabase.from("subject_teachers").upsert({
         cclass: classId,
         subject: regSubject,
@@ -357,6 +428,15 @@ export default function StaffPortal() {
         subject_id: loginId,
         password: "HIDDEN_IN_DB_USE_AUTH",
       }, { onConflict: 'subject_id' });
+      if (dbErr) { setLoading(false); setRegError(dbErr.message); return; }
+    } else if (userType === "tech") {
+      const { error: dbErr } = await supabase.from("tech_teachers").upsert({
+        cclass: classId,
+        course: regSubject,
+        email: regEmail.trim().toLowerCase(),
+        course_id: loginId,
+        password: "HIDDEN_IN_DB_USE_AUTH",
+      }, { onConflict: 'course_id' });
       if (dbErr) { setLoading(false); setRegError(dbErr.message); return; }
     }
 
@@ -419,6 +499,12 @@ export default function StaffPortal() {
     "Basic 7", "Basic 8", "Basic 9", "SS1", "SS2", "SS3"
   ];
 
+  const TECH_GROUPS = [
+    "Basic 1 - 6",
+    "Basic 7 - 9",
+    "SS1 - SS3"
+  ];
+
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-white flex flex-col items-center py-10 px-6 font-sans">
@@ -463,11 +549,11 @@ export default function StaffPortal() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full mb-20 max-w-4xl mx-auto">
             {categories.slice(0, 2).map((item, index) => (
               <div
                 key={index}
-                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center shadow-sm bg-white hover:-translate-y-2 transition-all duration-300 group`}
+                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center bg-white transition-all duration-300 group`}
               >
                 <div className={`${item.iconBg} p-4 rounded-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>{item.icon}</div>
                 <h2 className="text-2xl font-black text-gray-800 mb-6">{item.title}</h2>
@@ -507,13 +593,13 @@ export default function StaffPortal() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl mx-auto">
             {categories.slice(2, 4).map((item, index) => (
               <div
                 key={index}
-                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center shadow-sm bg-white hover:-translate-y-2 transition-all duration-300 group`}
+                className={`border-2 ${item.borderColor} rounded-[2rem] p-8 flex flex-col items-center bg-white transition-all duration-300 group`}
               >
-                <div className={`${item.iconBg} p-4 rounded-2xl mb-6 shadow-sm group-hover:scale-110 transition-transform`}>{item.icon}</div>
+                <div className={`${item.iconBg} p-4 rounded-2xl mb-6 group-hover:scale-110 transition-transform`}>{item.icon}</div>
                 <h2 className="text-2xl font-black text-gray-800 mb-6">{item.title}</h2>
 
                 <div className="relative w-full mb-8">
@@ -543,26 +629,45 @@ export default function StaffPortal() {
           </div>
         </div>
 
-        {/* SECTION 2: Subject Teacher Access */}
-        <div className="w-full max-w-6xl">
-          <div className="flex items-center gap-6 mb-12">
-            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
-            <h2 className="text-xl font-bold text-gray-500 px-4 whitespace-nowrap">Subject Teacher Access</h2>
-            <div className="h-[2px] bg-gray-100 flex-1 rounded-full" />
+        {/* SECTION 2: Subject & Tech Staff Access */}
+        <div className="w-full max-w-6xl mt-20">
+          <div className="flex items-center gap-6 mb-16">
+            <div className="h-[2px] bg-slate-100 flex-1 rounded-full" />
+            <div className="bg-indigo-600 px-8 py-2.5 rounded-full shadow-lg shadow-indigo-200">
+              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Subject & Tech Staff Access</h2>
+            </div>
+            <div className="h-[2px] bg-slate-100 flex-1 rounded-full" />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <div className="md:col-start-2 group bg-white border border-gray-100 rounded-[3rem] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.08)] relative overflow-hidden transition-all hover:scale-[1.03] hover:shadow-[0_48px_80px_-12px_rgba(0,0,0,0.12)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl mx-auto">
+            {/* Subject Teacher Login */}
+            <div className="group bg-white border-2 border-indigo-500 rounded-[2rem] p-8 flex flex-col items-center transition-all duration-300 relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-40 h-40 bg-blue-50/50 blur-[80px] -mr-16 -mt-16" />
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-20 h-20 rounded-[2rem] bg-indigo-50 flex items-center justify-center text-indigo-600 mb-8 shadow-sm">
-                  <BookOpen size={36} strokeWidth={2.5} />
+                <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 mb-6">
+                  <BookOpen className="w-6 h-6" />
                 </div>
-                <h3 className="text-gray-900 font-black text-2xl mb-3 tracking-tight">Subject Login</h3>
-                <p className="text-gray-400 text-sm text-center mb-10 leading-relaxed font-bold">Manage your specific subject assignments across all classes.</p>
+                <h2 className="text-2xl font-black text-gray-800 mb-6">Subject Login</h2>
                 <button 
                   onClick={() => openModal("Subject Access", "subject")}
-                  className="w-full bg-indigo-600 text-white py-5 rounded-[1.5rem] font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-95"
+                  className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all active:scale-95 shadow-lg"
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+
+            {/* Tech Staff Login */}
+            <div className="group bg-white border-2 border-teal-500 rounded-[2rem] p-8 flex flex-col items-center transition-all duration-300 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-40 h-40 bg-teal-50/50 blur-[80px] -mr-16 -mt-16" />
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-16 h-16 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 mb-6">
+                  <Laptop className="w-6 h-6" />
+                </div>
+                <h2 className="text-2xl font-black text-gray-800 mb-6">Tech Staff Login</h2>
+                <button 
+                  onClick={() => openModal("Tech Access", "tech")}
+                  className="w-full bg-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-teal-700 transition-all active:scale-95 shadow-lg"
                 >
                   Login
                 </button>
@@ -596,13 +701,13 @@ export default function StaffPortal() {
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
                     <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
-                      {userType === 'class' ? 'Teacher ID' : 'Subject ID'}
+                      {userType === 'class' ? 'Teacher ID' : userType === 'tech' ? 'Tech ID' : 'Subject ID'}
                     </label>
                     <input
                       type="text"
                       value={teacherId}
                       onChange={(e) => setTeacherId(e.target.value)}
-                      placeholder={userType === 'class' ? "e.g. SMCSTUTOR01" : "e.g. MATH-001"}
+                      placeholder={userType === 'class' ? "e.g. SMCSTUTOR01" : userType === 'tech' ? "e.g. TECH-001" : "e.g. MATH-001"}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900
                         placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono font-bold"
                     />
@@ -743,7 +848,7 @@ export default function StaffPortal() {
                   ← Back to Login
                 </button>
                 <p className="text-gray-500 text-xs mb-5 leading-relaxed font-bold">
-                  {userType === 'class' ? `Enter your details as the Class Teacher for ${activeModalClass}.` : 'Create your account using your Subject ID.'}
+                  {userType === 'class' ? `Enter your details as the Class Teacher for ${activeModalClass}.` : userType === 'tech' ? 'Create your account using your Tech ID.' : 'Create your account using your Subject ID.'}
                 </p>
 
                 <div className="space-y-5">
@@ -759,15 +864,20 @@ export default function StaffPortal() {
                   </div>
 
                   <div>
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Class</label>
+                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                      {userType === 'tech' ? 'Tech Group' : 'Class'}
+                    </label>
                     <div className="relative">
                       <select
                         value={regClass}
                         onChange={(e) => setRegClass(e.target.value)}
                         className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
                       >
-                        <option value="">{regClass ? regClass : "Choose Class..."}</option>
-                        {CLASS_LIST.map(cls => <option key={cls} value={cls}>{cls}</option>)}
+                        <option value="">{regClass ? regClass : userType === 'tech' ? "Choose Tech Group..." : "Choose Class..."}</option>
+                        {userType === 'tech' 
+                          ? TECH_GROUPS.map(cls => <option key={cls} value={cls}>{cls}</option>)
+                          : CLASS_LIST.map(cls => <option key={cls} value={cls}>{cls}</option>)
+                        }
                       </select>
                       <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                     </div>
@@ -788,7 +898,9 @@ export default function StaffPortal() {
                     <>
                       {regClass && (
                         <div>
-                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Assigned Subject</label>
+                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                            {userType === 'tech' ? 'Assigned Tech Course' : 'Assigned Subject'}
+                          </label>
                           <div className="relative">
                             <select
                               value={regSubject}
@@ -804,14 +916,16 @@ export default function StaffPortal() {
                       )}
                       {regSubject && (
                         <div>
-                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Subject ID</label>
+                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                            {userType === 'tech' ? 'Tech Course ID' : 'Subject ID'}
+                          </label>
                           <div className="relative">
                             <select
                               value={regSubjectId}
                               onChange={(e) => setRegSubjectId(e.target.value)}
                               className="w-full appearance-none bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
                             >
-                              <option value="">Link Subject ID...</option>
+                              <option value="">{userType === 'tech' ? 'Link Tech ID...' : 'Link Subject ID...'}</option>
                               {availableSubjectIds.map(id => (
                                 <option key={id.id} value={id.external_id}>
                                   {id.external_id}
