@@ -17,10 +17,10 @@ const inter = localFont({
 export const metadata = {
   title: "St Mary Educational Center",
   description: "Education",
-  // icons: {
-  //   icon: "/logo.png", // Change this to your actual PNG filename
-  //   apple: "/logo.png", // Optional: for iPhone home screens
-  // },
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
