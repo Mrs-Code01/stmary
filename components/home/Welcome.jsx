@@ -13,7 +13,7 @@ const DirectorsWelcome = () => {
         {/* Content Body: Simple Paragraphs */}
         <div className="flex flex-col gap-8 text-[#334155] leading-relaxed max-[700px]:text-[1.3rem] md:text-[22px] font-[var(--inter-font)]">
           <p>
-            At St. Mary Educational Center, we believe education is more than
+            At St. Mary Children School, we believe education is more than
             academics — it is the complete development of the individual. Our
             mission is to help every student discover and nurture their unique
             talents, gain confidence, and prepare for meaningful participation
@@ -35,7 +35,7 @@ const DirectorsWelcome = () => {
 
           <p>
             With a broad-based curriculum, modern facilities, and dedicated
-            teachers, St. Mary Educational Center continues to rank among the region's
+            teachers, St. Mary Children School continues to rank among the region's
             most progressive and examination-friendly schools.
           </p>
 
@@ -53,7 +53,7 @@ const DirectorsWelcome = () => {
               - The Director
             </h4>
             <p className="text-gray-400 max-[700px]:text-[1.1rem] text-[17px] font-medium tracking-wide mt-1 italic">
-              St. Mary Educational Center
+              St. Mary Children School
             </p>
           </div>
         </div>

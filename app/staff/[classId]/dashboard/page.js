@@ -168,21 +168,33 @@ export default function TeacherDashboard() {
     setScoresLoading(true);
     
     const { data: scoreData, error } = await supabase
-      .from("student_scores")
-      .select(`
-        *,
-        students (
-          full_name,
-          email
-        )
-      `)
+      .from("submissions")
+      .select("*")
       .eq("assignment_id", assignment.id)
       .order("score", { ascending: false });
 
     if (error) {
       console.error("Error fetching scores:", error);
+      setScores([]);
+    } else if (scoreData && scoreData.length > 0) {
+      const studentIds = [...new Set(scoreData.map((s) => s.student_id))];
+      const { data: studentsData } = await supabase
+        .from("students")
+        .select("id, full_name, email")
+        .in("id", studentIds);
+
+      const studentMap = {};
+      studentsData?.forEach((st) => {
+        studentMap[st.id] = st;
+      });
+
+      const enrichedScores = scoreData.map((s) => ({
+        ...s,
+        students: studentMap[s.student_id] || { full_name: "Unknown", email: "N/A" }
+      }));
+      setScores(enrichedScores);
     } else {
-      setScores(scoreData || []);
+      setScores([]);
     }
     setScoresLoading(false);
   };

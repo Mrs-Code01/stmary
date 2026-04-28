@@ -218,6 +218,7 @@ export default function StudentRegister() {
               >
                 <option value="">Select your class</option>
                 {[
+                  "PRE-NURSERY", "NURSERY 1", "NURSERY 2", "NURSERY 3",
                   "BASIC 1", "BASIC 2", "BASIC 3", "BASIC 4", "BASIC 5", "BASIC 6",
                   "BASIC 7", "BASIC 8", "BASIC 9",
                   "SS1", "SS2", "SS3",

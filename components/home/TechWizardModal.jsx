@@ -74,12 +74,12 @@ const TechWizardModal = () => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-500">
-      <div 
+      <div
         className="relative w-full max-w-2xl bg-white/90 backdrop-blur-2xl rounded-[2rem] md:rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.2)] border border-white/50 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
-        <button 
+        <button
           onClick={() => setIsOpen(false)}
           className="absolute top-4 right-4 md:top-6 md:right-6 z-50 p-2 md:p-3 rounded-full bg-slate-100/80 hover:bg-slate-200 text-slate-500 transition-all hover:rotate-90"
         >
@@ -89,17 +89,17 @@ const TechWizardModal = () => {
         <div className="flex flex-col md:flex-row h-full md:min-h-[400px]">
           {/* Image Side */}
           <div className="relative w-full md:w-5/12 h-48 md:h-auto overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 z-10" />
-             <img 
-               src={cards[currentIndex].img} 
-               alt={cards[currentIndex].title}
-               className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-             />
-             <div className="absolute bottom-4 left-4 z-20">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/30 backdrop-blur-md border border-white/40 text-white text-[9px] font-bold uppercase tracking-wider">
-                  <FaMagic /> {currentIndex + 1} / {cards.length}
-                </div>
-             </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 z-10" />
+            <img
+              src={cards[currentIndex].img}
+              alt={cards[currentIndex].title}
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+            />
+            <div className="absolute bottom-4 left-4 z-20">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/30 backdrop-blur-md border border-white/40 text-white text-[9px] font-bold uppercase tracking-wider">
+                <FaMagic /> {currentIndex + 1} / {cards.length}
+              </div>
+            </div>
           </div>
 
           {/* Content Side */}
@@ -117,28 +117,28 @@ const TechWizardModal = () => {
             </div>
 
             <div className="mt-4 md:mt-6 flex flex-wrap items-center justify-between gap-4">
-               <div className="flex gap-2 md:gap-3">
-                  <button 
-                    onClick={prevCard}
-                    className="p-3 md:p-4 rounded-full border border-slate-200 text-slate-400 hover:bg-slate-100 hover:text-[#001011] transition-all cursor-pointer active:scale-90"
-                  >
-                    <FaChevronLeft size={14} />
-                  </button>
-                  <button 
-                    onClick={nextCard}
-                    className="p-3 md:p-4 rounded-full bg-[#001011] text-white hover:bg-[#cc5500] transition-all shadow-lg hover:shadow-[#cc5500]/20 cursor-pointer active:scale-90"
-                  >
-                    <FaChevronRight size={14} />
-                  </button>
-               </div>
+              <div className="flex gap-2 md:gap-3">
+                <button
+                  onClick={prevCard}
+                  className="p-3 md:p-4 rounded-full border border-slate-200 text-slate-400 hover:bg-slate-100 hover:text-[#001011] transition-all cursor-pointer active:scale-90"
+                >
+                  <FaChevronLeft size={14} />
+                </button>
+                <button
+                  onClick={nextCard}
+                  className="p-3 md:p-4 rounded-full bg-[#001011] text-white hover:bg-[#cc5500] transition-all shadow-lg hover:shadow-[#cc5500]/20 cursor-pointer active:scale-90"
+                >
+                  <FaChevronRight size={14} />
+                </button>
+              </div>
 
-               <Link 
+              <Link
                 href={`/tech-wizard/${cards[currentIndex].id}`}
                 onClick={() => setIsOpen(false)}
                 className="flex-1 md:flex-none px-6 md:px-8 py-3 md:py-4 rounded-full bg-gradient-to-r from-[#0096ff] to-[#0077cc] text-white font-bold text-xs md:text-sm uppercase tracking-wider hover:shadow-xl transition-all hover:scale-105 active:scale-95 cursor-pointer text-center"
-               >
-                 Get Started
-               </Link>
+              >
+                Get Started
+              </Link>
             </div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const TechWizardModal = () => {
         {/* Progress Dots */}
         <div className="absolute bottom-4 left-1/2 md:left-[70%] -translate-x-1/2 flex gap-1.5 md:gap-2">
           {cards.map((_, idx) => (
-            <button 
+            <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all duration-300 ${currentIndex === idx ? "w-4 md:w-6 bg-[#001011]" : "bg-slate-300"} cursor-pointer`}
@@ -154,7 +154,7 @@ const TechWizardModal = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Background click to close */}
       <div className="absolute inset-0 -z-10" onClick={() => setIsOpen(false)} />
 

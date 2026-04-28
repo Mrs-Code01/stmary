@@ -10,24 +10,24 @@ import { FaTimes } from "react-icons/fa";
 
 function getStrength(pwd) {
   if (!pwd || pwd.length < 6) return "weak";
-  const hasLetter  = /[a-zA-Z]/.test(pwd);
-  const hasNumber  = /\d/.test(pwd);
+  const hasLetter = /[a-zA-Z]/.test(pwd);
+  const hasNumber = /\d/.test(pwd);
   const hasSpecial = /[!@#$%^&*_\-]/.test(pwd);
   if (pwd.length >= 10 && hasLetter && hasNumber && hasSpecial) return "strong";
-  if (pwd.length >= 8  && hasLetter && hasNumber)               return "medium";
+  if (pwd.length >= 8 && hasLetter && hasNumber) return "medium";
   return "weak";
 }
 
 function validatePassword(pwd) {
   if (!pwd || pwd.length < 8) return "Must be at least 8 characters.";
-  if (!/[a-zA-Z]/.test(pwd))  return "Must contain at least one letter.";
-  if (!/\d/.test(pwd))        return "Must contain at least one number.";
+  if (!/[a-zA-Z]/.test(pwd)) return "Must contain at least one letter.";
+  if (!/\d/.test(pwd)) return "Must contain at least one number.";
   return "";
 }
 
 const strengthConfig = {
-  weak:   { label: "Weak",   color: "#f87171", width: "33%"  },
-  medium: { label: "Medium", color: "#f59e0b", width: "66%"  },
+  weak: { label: "Weak", color: "#f87171", width: "33%" },
+  medium: { label: "Medium", color: "#f59e0b", width: "66%" },
   strong: { label: "Strong", color: "#22c55e", width: "100%" },
 };
 
@@ -63,34 +63,34 @@ export default function StaffPortal() {
 
   // Login state
   const [teacherId, setTeacherId] = useState("");
-  const [password,  setPassword]  = useState("");
-  const [showPwd,   setShowPwd]   = useState(false);
-  const [loading,   setLoading]   = useState(false);
-  const [error,     setError]     = useState("");
+  const [password, setPassword] = useState("");
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // Registration state
-  const [regTeacherId,       setRegTeacherId]       = useState("");
-  const [regEmail,           setRegEmail]           = useState("");
-  const [regPassword,        setRegPassword]        = useState("");
+  const [regTeacherId, setRegTeacherId] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
   const [regConfirmPassword, setRegConfirmPassword] = useState("");
-  const [regClass,           setRegClass]           = useState("");
-  const [regSubject,         setRegSubject]         = useState("");
-  const [regSubjectId,       setRegSubjectId]       = useState("");
-  const [showRegPwd,         setShowRegPwd]         = useState(false);
-  const [showRegConfirm,     setShowRegConfirm]     = useState(false);
-  const [regError,           setRegError]           = useState("");
+  const [regClass, setRegClass] = useState("");
+  const [regSubject, setRegSubject] = useState("");
+  const [regSubjectId, setRegSubjectId] = useState("");
+  const [showRegPwd, setShowRegPwd] = useState(false);
+  const [showRegConfirm, setShowRegConfirm] = useState(false);
+  const [regError, setRegError] = useState("");
 
-  const [availableSubjects,   setAvailableSubjects]   = useState([]);
+  const [availableSubjects, setAvailableSubjects] = useState([]);
   const [availableSubjectIds, setAvailableSubjectIds] = useState([]);
 
   // Modal sub-step: "login" | "register" | "regSuccess"
   const [step, setStep] = useState("login");
 
   // Forgot-password (inline in login)
-  const [forgotMode,    setForgotMode]    = useState(false);
-  const [forgotEmail,   setForgotEmail]   = useState("");
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotError,   setForgotError]   = useState("");
+  const [forgotError, setForgotError] = useState("");
   const [forgotSuccess, setForgotSuccess] = useState(false);
 
   const [selectedClasses, setSelectedClasses] = useState({
@@ -175,7 +175,11 @@ export default function StaffPortal() {
   const openModal = (categoryTitle, type = "class") => {
     const cls = categoryTitle === "Subject Access" ? "" : selectedClasses[categoryTitle];
     if (type === "class" && !cls) { alert("Please select a class first from the dropdown!"); return; }
-    
+
+    // Clear any existing session to prevent cross-class contamination
+    document.cookie = "smcs_teacher=; path=/; max-age=0";
+    supabase.auth.signOut();
+
     setActiveModalClass(cls || "Subject Teacher");
     setUserType(type);
     setTeacherId(""); setPassword(""); setShowPwd(false);
@@ -190,11 +194,11 @@ export default function StaffPortal() {
   const closeModal = () => setActiveModalClass(null);
 
   // ── Computed for registration form ────────────────────────────────────────
-  const regPwdError     = regPassword ? validatePassword(regPassword) : "";
+  const regPwdError = regPassword ? validatePassword(regPassword) : "";
   const regConfirmError = regConfirmPassword && regPassword !== regConfirmPassword
     ? "Passwords do not match." : "";
-  const regStrength     = regPassword ? getStrength(regPassword) : null;
-  
+  const regStrength = regPassword ? getStrength(regPassword) : null;
+
   const regIsSubjectValid =
     regEmail.trim() && regPassword && regConfirmPassword &&
     regClass && regSubject && regSubjectId &&
@@ -215,92 +219,142 @@ export default function StaffPortal() {
     setLoading(true);
     const logId = teacherId.trim();
 
-    if (userType === "class") {
-      const cls = activeModalClass;
-      // Fetch teacher by ID and class_id to ensure they match
-      const { data: teacher } = await supabase
-        .from("teachers")
-        .select("*")
-        .eq("id", logId)
-        .eq("class_id", cls)
-        .maybeSingle();
-
-      if (!teacher) {
-        setLoading(false);
-        setError("Invalid Staff ID or Class selection.");
-        return;
-      }
-
-      const { error: authErr } = await supabase.auth.signInWithPassword({
-        email: teacher.email,
-        password: password.trim(),
-      });
-
-      if (authErr) {
-        setLoading(false);
-        setError("Incorrect password.");
-        return;
-      }
-
+    if (!logId || !password.trim()) {
       setLoading(false);
-      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ id: teacher.id, class_id: teacher.class_id, type: "class" }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      router.push(`/staff/${teacher.class_id}/dashboard`);
-    } else if (userType === "subject") {
-      // Subject Teacher Login
-      const { data: teacher } = await supabase.from("subject_teachers").select("*").eq("subject_id", logId).maybeSingle();
-      if (!teacher) {
+      setError("Please enter your ID and password.");
+      return;
+    }
+
+    // Clear cookie upfront (but keep auth session alive so DB queries work under RLS)
+    document.cookie = "smcs_teacher=; path=/; max-age=0";
+
+    try {
+      if (userType === "class") {
+        // Look up teacher by ID only — each ID maps to exactly one class
+        const { data: teacher, error: queryErr } = await supabase
+          .from("teachers")
+          .select("*")
+          .eq("id", logId)
+          .maybeSingle();
+
+        if (queryErr) {
+          console.error("Teacher lookup error:", queryErr);
+          setLoading(false);
+          setError("Unable to verify credentials. Please try again.");
+          return;
+        }
+
+        if (!teacher) {
+          setLoading(false);
+          setError("Staff ID not found. Please register first.");
+          return;
+        }
+
+        // Each Staff ID is tied to exactly one class — reject if it doesn't match
+        const selectedClass = activeModalClass;
+        if (teacher.class_id !== selectedClass) {
+          setLoading(false);
+          setError(`This Staff ID is registered for "${teacher.class_id}", not "${selectedClass}". Please use the correct class card to log in.`);
+          return;
+        }
+
+        // Sign out previous session right before signing in as this teacher
+        await supabase.auth.signOut();
+        const { error: authErr } = await supabase.auth.signInWithPassword({
+          email: teacher.email,
+          password: password.trim(),
+        });
+
+        if (authErr) {
+          setLoading(false);
+          setError("Incorrect password.");
+          return;
+        }
+
         setLoading(false);
-        setError("Subject ID not found.");
-        return;
-      }
+        document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ id: teacher.id, class_id: teacher.class_id, type: "class" }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+        router.push(`/staff/${teacher.class_id}/dashboard`);
+      } else if (userType === "subject") {
+        // Subject Teacher Login
+        const { data: teacher, error: queryErr } = await supabase.from("subject_teachers").select("*").eq("subject_id", logId).maybeSingle();
 
-      const { error: authErr } = await supabase.auth.signInWithPassword({
-        email: teacher.email,
-        password: password.trim(),
-      });
+        if (queryErr) {
+          console.error("Subject teacher lookup error:", queryErr);
+          setLoading(false);
+          setError("Unable to verify credentials. Please try again.");
+          return;
+        }
 
-      if (authErr) {
+        if (!teacher) {
+          setLoading(false);
+          setError("Subject ID not found.");
+          return;
+        }
+
+        // Sign out previous session right before signing in as this teacher
+        await supabase.auth.signOut();
+        const { error: authErr } = await supabase.auth.signInWithPassword({
+          email: teacher.email,
+          password: password.trim(),
+        });
+
+        if (authErr) {
+          setLoading(false);
+          setError("Incorrect password.");
+          return;
+        }
+
         setLoading(false);
-        setError("Incorrect password.");
-        return;
-      }
+        document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({
+          id: teacher.subject_id,
+          class_id: teacher.cclass,
+          subject: teacher.subject,
+          type: "subject"
+        }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+        router.push(`/staff/${teacher.cclass}/dashboard`);
+      } else if (userType === "tech") {
+        // Tech Teacher Login
+        const { data: teacher, error: queryErr } = await supabase.from("tech_teachers").select("*").eq("course_id", logId).maybeSingle();
 
+        if (queryErr) {
+          console.error("Tech teacher lookup error:", queryErr);
+          setLoading(false);
+          setError("Unable to verify credentials. Please try again.");
+          return;
+        }
+
+        if (!teacher) {
+          setLoading(false);
+          setError("Tech Course ID not found.");
+          return;
+        }
+
+        // Sign out previous session right before signing in as this teacher
+        await supabase.auth.signOut();
+        const { error: authErr } = await supabase.auth.signInWithPassword({
+          email: teacher.email,
+          password: password.trim(),
+        });
+
+        if (authErr) {
+          setLoading(false);
+          setError("Incorrect password.");
+          return;
+        }
+
+        setLoading(false);
+        document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({
+          id: teacher.course_id,
+          class_id: teacher.cclass,
+          subject: teacher.course,
+          type: "tech"
+        }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
+        router.push(`/staff/${teacher.cclass}/dashboard`);
+      }
+    } catch (err) {
+      console.error("Login error:", err);
       setLoading(false);
-      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ 
-        id: teacher.subject_id, 
-        class_id: teacher.cclass, 
-        subject: teacher.subject, 
-        type: "subject" 
-      }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      router.push(`/staff/${teacher.cclass}/dashboard`);
-    } else if (userType === "tech") {
-      // Tech Teacher Login
-      const { data: teacher } = await supabase.from("tech_teachers").select("*").eq("course_id", logId).maybeSingle();
-      if (!teacher) {
-        setLoading(false);
-        setError("Tech Course ID not found.");
-        return;
-      }
-
-      const { error: authErr } = await supabase.auth.signInWithPassword({
-        email: teacher.email,
-        password: password.trim(),
-      });
-
-      if (authErr) {
-        setLoading(false);
-        setError("Incorrect password.");
-        return;
-      }
-
-      setLoading(false);
-      document.cookie = `smcs_teacher=${encodeURIComponent(JSON.stringify({ 
-        id: teacher.course_id, 
-        class_id: teacher.cclass, 
-        subject: teacher.course, 
-        type: "tech" 
-      }))}; path=/; max-age=${60 * 60 * 8}; SameSite=Lax`;
-      router.push(`/staff/${teacher.cclass}/dashboard`);
+      setError("Something went wrong. Please try again.");
     }
   };
 
@@ -475,27 +529,27 @@ export default function StaffPortal() {
       icon: <BookOpen className="w-6 h-6 text-blue-600" />,
       iconBg: "bg-blue-50", borderColor: "border-blue-500",
       buttonBg: "bg-blue-300", hoverBg: "hover:bg-blue-400",
-      classes: ["Basic 1","Basic 2","Basic 3","Basic 4","Basic 5","Basic 6"],
+      classes: ["Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6"],
     },
     {
       title: "Higher Basic",
       icon: <GraduationCap className="w-6 h-6 text-green-600" />,
       iconBg: "bg-green-50", borderColor: "border-green-500",
       buttonBg: "bg-green-300", hoverBg: "hover:bg-green-400",
-      classes: ["Basic 7","Basic 8","Basic 9"],
+      classes: ["Basic 7", "Basic 8", "Basic 9"],
     },
     {
       title: "Senior",
       icon: <Medal className="w-6 h-6 text-orange-600" />,
       iconBg: "bg-orange-50", borderColor: "border-orange-500",
       buttonBg: "bg-orange-300", hoverBg: "hover:bg-orange-400",
-      classes: ["SS1","SS2","SS3"],
+      classes: ["SS1", "SS2", "SS3"],
     },
   ];
 
   const CLASS_LIST = [
-    "Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3", 
-    "Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6", 
+    "Pre-Nursery", "Nursery 1", "Nursery 2", "Nursery 3",
+    "Basic 1", "Basic 2", "Basic 3", "Basic 4", "Basic 5", "Basic 6",
     "Basic 7", "Basic 8", "Basic 9", "SS1", "SS2", "SS3"
   ];
 
@@ -508,7 +562,7 @@ export default function StaffPortal() {
   // ─────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-white flex flex-col items-center py-10 px-6 font-sans">
-      
+
       {/* Top Nav */}
       <div className="w-full max-w-6xl flex justify-start mb-10 md:mb-16">
         <button
@@ -520,7 +574,7 @@ export default function StaffPortal() {
       </div>
 
       <div className="flex flex-col items-center w-full max-w-6xl flex-grow justify-center pb-20">
-        
+
         {/* Header */}
         <div className="text-center mb-12 flex flex-col items-center">
           <img
@@ -638,7 +692,7 @@ export default function StaffPortal() {
             </div>
             <div className="h-[2px] bg-slate-100 flex-1 rounded-full" />
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl mx-auto">
             {/* Subject Teacher Login */}
             <div className="group bg-white border-2 border-indigo-500 rounded-[2rem] p-8 flex flex-col items-center transition-all duration-300 relative overflow-hidden group">
@@ -648,7 +702,7 @@ export default function StaffPortal() {
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <h2 className="text-2xl font-black text-gray-800 mb-6">Subject Login</h2>
-                <button 
+                <button
                   onClick={() => openModal("Subject Access", "subject")}
                   className="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-indigo-700 transition-all active:scale-95 shadow-lg"
                 >
@@ -665,7 +719,7 @@ export default function StaffPortal() {
                   <Laptop className="w-6 h-6" />
                 </div>
                 <h2 className="text-2xl font-black text-gray-800 mb-6">Tech Staff Login</h2>
-                <button 
+                <button
                   onClick={() => openModal("Tech Access", "tech")}
                   className="w-full bg-teal-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-teal-700 transition-all active:scale-95 shadow-lg"
                 >
@@ -867,20 +921,28 @@ export default function StaffPortal() {
                     <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
                       {userType === 'tech' ? 'Tech Group' : 'Class'}
                     </label>
-                    <div className="relative">
-                      <select
-                        value={regClass}
-                        onChange={(e) => setRegClass(e.target.value)}
-                        className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
-                      >
-                        <option value="">{regClass ? regClass : userType === 'tech' ? "Choose Tech Group..." : "Choose Class..."}</option>
-                        {userType === 'tech' 
-                          ? TECH_GROUPS.map(cls => <option key={cls} value={cls}>{cls}</option>)
-                          : CLASS_LIST.map(cls => <option key={cls} value={cls}>{cls}</option>)
-                        }
-                      </select>
-                      <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                    </div>
+                    {userType === 'class' ? (
+                      // For class teachers: lock to the class they clicked on — no changes allowed
+                      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-700 text-sm font-bold flex items-center justify-between">
+                        <span>{regClass}</span>
+                        <span className="text-xs text-gray-400 font-normal">Locked</span>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <select
+                          value={regClass}
+                          onChange={(e) => setRegClass(e.target.value)}
+                          className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                        >
+                          <option value="" disabled>{userType === 'tech' ? 'Choose Tech Group...' : 'Choose Class...'}</option>
+                          {userType === 'tech'
+                            ? TECH_GROUPS.map(cls => <option key={cls} value={cls}>{cls}</option>)
+                            : CLASS_LIST.map(cls => <option key={cls} value={cls}>{cls}</option>)
+                          }
+                        </select>
+                        <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      </div>
+                    )}
                   </div>
 
                   {userType === "class" ? (
@@ -949,7 +1011,7 @@ export default function StaffPortal() {
                         placeholder="Min. 8 chars, letter + number"
                         className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
                       />
-                      <button onClick={()=>setShowRegPwd(!showRegPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16}/></button>
+                      <button onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16} /></button>
                     </div>
                     {regPassword && regStrength && <StrengthBar strength={regStrength} />}
                   </div>
@@ -964,7 +1026,7 @@ export default function StaffPortal() {
                         placeholder="Re-enter your password"
                         className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
                       />
-                      <button onClick={()=>setShowRegConfirm(!showRegConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16}/></button>
+                      <button onClick={() => setShowRegConfirm(!showRegConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16} /></button>
                     </div>
                   </div>
                 </div>

@@ -37,15 +37,15 @@ const Gallery = () => {
         {/* Header Content */}
         <div className="text-center mb-16 space-y-6">
           <div className="inline-flex items-center gap-3 justify-center w-full">
-             <span className="w-10 h-[1px] bg-[#cc5500]"></span>
-             <span className="text-[#cc5500] text-xs font-black uppercase tracking-[0.4em]">Our Campus</span>
-             <span className="w-10 h-[1px] bg-[#cc5500]"></span>
+            <span className="w-10 h-[1px] bg-[#cc5500]"></span>
+            <span className="text-[#cc5500] text-xs font-black uppercase tracking-[0.4em]">Our Campus</span>
+            <span className="w-10 h-[1px] bg-[#cc5500]"></span>
           </div>
           <h2 className="text-[#001011] text-4xl md:text-6xl font-black tracking-tight font-[var(--worksans-font)]">
             Discover Our <span className="text-[#0096ff]">Excellence</span>
           </h2>
           <p className="text-slate-500 text-base md:text-xl max-w-3xl mx-auto leading-relaxed font-medium">
-            St Mary Educational Center is a leading institution dedicated to
+            St. Mary Children School is a leading institution dedicated to
             fulfilling the true potential of each child through a supportive and
             inspiring environment.
           </p>
@@ -74,9 +74,9 @@ const Gallery = () => {
                   className="w-full h-auto object-cover transition-transform duration-[2s] ease-out group-hover:scale-110"
                 />
                 <div className="absolute bottom-6 left-6 z-20 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-                   <span className="text-white text-xs font-black uppercase tracking-widest bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30">
-                      View
-                   </span>
+                  <span className="text-white text-xs font-black uppercase tracking-widest bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30">
+                    View
+                  </span>
                 </div>
               </div>
             ))}
@@ -86,7 +86,7 @@ const Gallery = () => {
         {/* View More Button */}
         {!loading && images.length > 0 && (
           <div className="mt-16 flex justify-center">
-            <Link 
+            <Link
               href="/gallery"
               className="bg-transparent border-2 border-[#001011] text-[#001011] hover:bg-[#001011] hover:text-white px-10 py-4 rounded-full font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md active:scale-95 inline-block"
             >
