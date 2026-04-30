@@ -685,12 +685,25 @@ export default function StaffPortal() {
 
         {/* SECTION 2: Subject & Tech Staff Access */}
         <div className="w-full max-w-6xl mt-20">
-          <div className="flex items-center gap-6 mb-16">
-            <div className="h-[2px] bg-slate-100 flex-1 rounded-full" />
-            <div className="bg-indigo-600 px-8 py-2.5 rounded-full shadow-lg shadow-indigo-200">
-              <h2 className="text-sm font-black text-white uppercase tracking-[0.2em]">Subject & Tech Staff Access</h2>
+          <div className="w-full bg-slate-900 p-6 md:p-8 rounded-[2rem] border border-slate-800 shadow-2xl mb-16 flex items-center justify-between relative overflow-hidden group">
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+            
+            <div className="flex items-center gap-6 relative z-10">
+              <div className="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center shadow-inner border border-slate-700/50">
+                <Lock className="text-indigo-400 w-7 h-7" />
+              </div>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">Subject & Tech Access</h2>
+                <p className="text-slate-400 text-base font-medium">Restricted portals for specialized teaching staff</p>
+              </div>
             </div>
-            <div className="h-[2px] bg-slate-100 flex-1 rounded-full" />
+
+            <div className="hidden lg:flex items-center gap-3 relative z-10">
+              <div className="px-4 py-2 rounded-xl bg-slate-800/50 border border-slate-700 backdrop-blur-sm">
+                <span className="text-[11px] font-black text-indigo-300 uppercase tracking-[0.2em]">Secure Entry</span>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-4xl mx-auto">
@@ -744,8 +757,8 @@ export default function StaffPortal() {
             </button>
 
             {/* Modal header */}
-            <div className="mb-8">
-              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-1">{step === 'register' ? 'New Account' : 'Portal Access'}</p>
+            <div className="mb-8 text-center">
+              <p className="text-gray-400 text-base font-bold uppercase tracking-widest mb-1">{step === 'register' ? 'New Account' : 'Portal Access'}</p>
               <h2 className="text-3xl font-black text-gray-800 tracking-tight">{step === 'register' ? activeModalClass : 'Login Access'}</h2>
             </div>
 
@@ -754,7 +767,7 @@ export default function StaffPortal() {
               <>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div>
-                    <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                    <label className="text-gray-600 text-base font-bold uppercase tracking-wider block mb-2 px-1">
                       {userType === 'class' ? 'Teacher ID' : userType === 'tech' ? 'Tech ID' : 'Subject ID'}
                     </label>
                     <input
@@ -763,19 +776,19 @@ export default function StaffPortal() {
                       onChange={(e) => setTeacherId(e.target.value)}
                       placeholder={userType === 'class' ? "e.g. SMCSTUTOR01" : userType === 'tech' ? "e.g. TECH-001" : "e.g. MATH-001"}
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-900
-                        placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono font-bold"
+                        placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-lg font-mono font-bold"
                     />
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-gray-600 text-xs font-bold uppercase tracking-wider">
+                      <label className="text-gray-600 text-base font-bold uppercase tracking-wider">
                         Password
                       </label>
                       <button
                         type="button"
                         onClick={() => setForgotMode(true)}
-                        className="text-blue-500 text-xs font-bold hover:text-blue-700 transition-colors hover:underline"
+                        className="text-blue-500 text-base font-bold hover:text-blue-700 transition-colors hover:underline"
                       >
                         Forgot password?
                       </button>
@@ -787,7 +800,7 @@ export default function StaffPortal() {
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Your password"
                         className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 pr-11 text-gray-900
-                          placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                          placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-lg"
                       />
                       <button
                         type="button"
@@ -818,7 +831,7 @@ export default function StaffPortal() {
                 </form>
 
                 <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-                  <p className="text-gray-500 text-xs font-medium mb-3">Not registered yet?</p>
+                  <p className="text-gray-500 text-base font-medium mb-3">Not registered yet?</p>
                   <button
                     onClick={() => setStep("register")}
                     className="w-full bg-orange-50 text-orange-600 hover:bg-orange-600 hover:text-white
@@ -835,7 +848,7 @@ export default function StaffPortal() {
               <>
                 <button
                   onClick={() => { setForgotMode(false); setForgotSuccess(false); setForgotError(""); setForgotEmail(""); }}
-                  className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-5
+                  className="text-gray-400 text-base font-bold uppercase tracking-wider mb-5
                     hover:text-gray-600 transition-colors flex items-center gap-1"
                 >
                   ← Back to Login
@@ -846,19 +859,19 @@ export default function StaffPortal() {
                     <div className="w-12 h-12 bg-green-50 border border-green-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
                       <span className="text-xl">📧</span>
                     </div>
-                    <p className="text-gray-800 font-bold text-sm mb-2">Reset link sent!</p>
-                    <p className="text-gray-500 text-xs leading-relaxed">
+                    <p className="text-gray-800 font-bold text-base mb-2">Reset link sent!</p>
+                    <p className="text-gray-500 text-base leading-relaxed">
                       Check <span className="font-bold text-blue-600">{forgotEmail}</span> for a password reset link.
                     </p>
                   </div>
                 ) : (
                   <>
-                    <p className="text-gray-600 text-sm mb-5">
+                    <p className="text-gray-600 text-base mb-5">
                       Enter your registered email and we'll send a reset link.
                     </p>
                     <form onSubmit={handleForgotPassword} className="space-y-4">
                       <div>
-                        <label className="text-gray-600 text-xs font-bold uppercase tracking-wider block mb-2">
+                        <label className="text-gray-600 text-base font-bold uppercase tracking-wider block mb-2">
                           Email Address
                         </label>
                         <input
@@ -868,7 +881,7 @@ export default function StaffPortal() {
                           placeholder="e.g. teacher@school.com"
                           required
                           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900
-                            placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-sm"
+                            placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors text-lg"
                         />
                       </div>
                       {forgotError && (
@@ -896,43 +909,43 @@ export default function StaffPortal() {
               <>
                 <button
                   onClick={() => setStep("login")}
-                  className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-5
+                  className="text-gray-400 text-base font-bold uppercase tracking-wider mb-5
                     hover:text-gray-600 transition-colors flex items-center gap-1"
                 >
                   ← Back to Login
                 </button>
-                <p className="text-gray-500 text-xs mb-5 leading-relaxed font-bold">
+                <p className="text-gray-500 text-base mb-5 leading-relaxed font-bold text-center">
                   {userType === 'class' ? `Enter your details as the Class Teacher for ${activeModalClass}.` : userType === 'tech' ? 'Create your account using your Tech ID.' : 'Create your account using your Subject ID.'}
                 </p>
 
                 <div className="space-y-5">
                   <div>
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Email Address</label>
+                    <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">Email Address</label>
                     <input
                       type="email"
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
                       placeholder="e.g. teacher@school.com"
-                      className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                      className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-lg font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                    <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">
                       {userType === 'tech' ? 'Tech Group' : 'Class'}
                     </label>
                     {userType === 'class' ? (
                       // For class teachers: lock to the class they clicked on — no changes allowed
-                      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-700 text-sm font-bold flex items-center justify-between">
+                      <div className="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-700 text-lg font-bold flex items-center justify-between">
                         <span>{regClass}</span>
-                        <span className="text-xs text-gray-400 font-normal">Locked</span>
+                        <span className="text-base text-gray-400 font-normal">Locked</span>
                       </div>
                     ) : (
                       <div className="relative">
                         <select
                           value={regClass}
                           onChange={(e) => setRegClass(e.target.value)}
-                          className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                          className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-lg font-medium"
                         >
                           <option value="" disabled>{userType === 'tech' ? 'Choose Tech Group...' : 'Choose Class...'}</option>
                           {userType === 'tech'
@@ -947,27 +960,27 @@ export default function StaffPortal() {
 
                   {userType === "class" ? (
                     <div>
-                      <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Tutor ID</label>
+                      <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">Tutor ID</label>
                       <input
                         type="text"
                         value={regTeacherId}
                         onChange={(e) => setRegTeacherId(e.target.value)}
                         placeholder="e.g. SMCSTUTOR01"
-                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm font-mono font-bold"
+                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-lg font-mono font-bold"
                       />
                     </div>
                   ) : (
                     <>
                       {regClass && (
                         <div>
-                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                          <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">
                             {userType === 'tech' ? 'Assigned Tech Course' : 'Assigned Subject'}
                           </label>
                           <div className="relative">
                             <select
                               value={regSubject}
                               onChange={(e) => setRegSubject(e.target.value)}
-                              className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                              className="w-full appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-lg font-medium"
                             >
                               <option value="">Select Subject...</option>
                               {availableSubjects.map(sub => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
@@ -978,14 +991,14 @@ export default function StaffPortal() {
                       )}
                       {regSubject && (
                         <div>
-                          <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">
+                          <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">
                             {userType === 'tech' ? 'Tech Course ID' : 'Subject ID'}
                           </label>
                           <div className="relative">
                             <select
                               value={regSubjectId}
                               onChange={(e) => setRegSubjectId(e.target.value)}
-                              className="w-full appearance-none bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-sm font-medium"
+                              className="w-full appearance-none bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 transition-all text-lg font-medium"
                             >
                               <option value="">{userType === 'tech' ? 'Link Tech ID...' : 'Link Subject ID...'}</option>
                               {availableSubjectIds.map(id => (
@@ -1002,14 +1015,14 @@ export default function StaffPortal() {
                   )}
 
                   <div>
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Password</label>
+                    <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">Password</label>
                     <div className="relative">
                       <input
                         type={showRegPwd ? "text" : "password"}
                         value={regPassword}
                         onChange={(e) => setRegPassword(e.target.value)}
                         placeholder="Min. 8 chars, letter + number"
-                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
+                        className="w-full bg-[#f0f4f9] border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-lg"
                       />
                       <button onClick={() => setShowRegPwd(!showRegPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16} /></button>
                     </div>
@@ -1017,14 +1030,14 @@ export default function StaffPortal() {
                   </div>
 
                   <div>
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2 px-1">Confirm Password</label>
+                    <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2 px-1">Confirm Password</label>
                     <div className="relative">
                       <input
                         type={showRegConfirm ? "text" : "password"}
                         value={regConfirmPassword}
                         onChange={(e) => setRegConfirmPassword(e.target.value)}
                         placeholder="Re-enter your password"
-                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-sm"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 pr-11 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 transition-all text-lg"
                       />
                       <button onClick={() => setShowRegConfirm(!showRegConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><Eye size={16} /></button>
                     </div>
@@ -1032,7 +1045,7 @@ export default function StaffPortal() {
                 </div>
 
                 {regError && (
-                  <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-500 text-xs font-bold">
+                  <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-red-500 text-base font-bold">
                     {regError}
                   </div>
                 )}
@@ -1055,8 +1068,8 @@ export default function StaffPortal() {
                 <div className="flex items-center gap-4 bg-green-50 px-4 py-5 rounded-xl">
                   <span className="text-3xl">✅</span>
                   <div>
-                    <p className="text-green-800 font-bold text-sm">Account Created!</p>
-                    <p className="text-green-600 text-xs mt-1">
+                    <p className="text-green-800 font-bold text-base">Account Created!</p>
+                    <p className="text-green-600 text-base mt-1">
                       Your staff profile is ready. You can now log in to the portal.
                     </p>
                   </div>

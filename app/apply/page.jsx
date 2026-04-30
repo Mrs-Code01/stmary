@@ -2,8 +2,9 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { FaCheckCircle, FaSpinner, FaChevronRight, FaChevronLeft } from "react-icons/fa";
+import { FaCheckCircle, FaSpinner, FaChevronRight, FaChevronLeft, FaCreditCard } from "react-icons/fa";
 import { supabase } from "@/lib/supabase";
+import FeesModal from "@/components/apply/FeesModal";
 
 export default function ApplyPage() {
   const [step, setStep] = useState(1);
@@ -12,6 +13,7 @@ export default function ApplyPage() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoError, setPhotoError] = useState("");
+  const [showFeesModal, setShowFeesModal] = useState(false);
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -183,20 +185,29 @@ export default function ApplyPage() {
         />
         <div className="absolute inset-0 flex items-center">
           <div className="w-[90%] mx-auto">
-            <div className="w-[80%]">
-              <span className="inline-block bg-[#0096ff] text-white text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 mb-6 mt-[50px]">
+            <div className="w-[100%]">
+              <span className="inline-block bg-[#0096ff] text-white text-sm font-black uppercase tracking-[0.3em] px-4 py-1.5 mb-6 mt-[50px]">
                 ADMISSION FORM
               </span>
               <h1 className="text-5xl md:text-[5rem] font-black text-white mb-6 tracking-tighter leading-[1.1] font-[var(--worksans-font)]">
                 Apply to <br /> St. Mary Children School
               </h1>
-              <p className="text-white/80 text-lg md:text-xl w-[60%] font-medium tracking-wide">
+              <p className="text-white/80 text-xl md:text-2xl w-[100%] font-medium tracking-wide">
                 Join a community dedicated to academic excellence. Complete the application below to begin your journey.
               </p>
+              <button
+                onClick={() => setShowFeesModal(true)}
+                className="mt-8 flex items-center gap-3 bg-white hover:bg-[#cc5500] hover:text-white text-[#00142a] px-8 py-4 rounded-sm font-black text-sm tracking-[0.2em] uppercase transition-all shadow-xl active:scale-95 group"
+              >
+                <FaCreditCard className="group-hover:rotate-12 transition-transform" />
+                Fees and Payment
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      <FeesModal isOpen={showFeesModal} onClose={() => setShowFeesModal(false)} />
 
       <div className="w-[90%] mx-auto -mt-16 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -217,9 +228,9 @@ export default function ApplyPage() {
               ))}
             </ul>
             <div className="mt-16 pt-8 border-t border-white/10">
-              <p className="text-[#cc5500] text-[13px] font-black uppercase tracking-widest mb-2">Admission Office</p>
-              <p className="text-white/60 text-[12px] font-medium italic">Questions? Contact us at</p>
-              <p className="text-white text-[12px] tracking-tight italic">info@smcs.org</p>
+              <p className="text-[#cc5500] text-base font-black uppercase tracking-widest mb-2">Admission Office</p>
+              <p className="text-white/60 text-base font-medium italic">Questions? Contact us at</p>
+              <p className="text-white text-base tracking-tight italic">info@smcs.org</p>
             </div>
           </div>
 
@@ -242,9 +253,9 @@ export default function ApplyPage() {
                     {step === 2 && "Address & Contact"}
                     {step === 3 && "Additional Details"}
                   </h2>
-                  <p className="text-gray-400 text-[12px] mt-2">2025/2026 Academic Session</p>
+                  <p className="text-gray-400 text-base mt-2">2025/2026 Academic Session</p>
                 </div>
-                <div className="text-gray-400 font-black text-[10px] uppercase tracking-widest whitespace-nowrap">
+                <div className="text-gray-400 font-black text-base uppercase tracking-widest whitespace-nowrap">
                   Step {step} of 3
                 </div>
               </div>
@@ -252,7 +263,7 @@ export default function ApplyPage() {
               <div className="w-full h-px bg-gray-100 mb-12" />
 
               {/* Step Label */}
-              <div className="text-[#cc5500] text-[13px] font-black uppercase tracking-[0.1em] mb-8">
+              <div className="text-[#cc5500] text-base font-black uppercase tracking-[0.1em] mb-8">
                 {step === 1 && "STUDENT INFORMATION"}
                 {step === 2 && "ADDRESS & CONTACT"}
                 {step === 3 && "ADDITIONAL DETAILS"}
@@ -263,36 +274,36 @@ export default function ApplyPage() {
                 {step === 1 && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Student&apos;s Full Name</label>
-                      <input required type="text" name="studentName" value={formData.studentName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter full name" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Student&apos;s Full Name</label>
+                      <input required type="text" name="studentName" value={formData.studentName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter full name" />
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Father&apos;s Name</label>
-                      <input required type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter father's name" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Father&apos;s Name</label>
+                      <input required type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter father's name" />
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Mother&apos;s Name</label>
-                      <input required type="text" name="motherName" value={formData.motherName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter mother's name" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Mother&apos;s Name</label>
+                      <input required type="text" name="motherName" value={formData.motherName} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter mother's name" />
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Date of Birth</label>
-                      <input required type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] font-bold text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none flex-row-reverse" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Date of Birth</label>
+                      <input required type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] font-bold text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none flex-row-reverse" />
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Gender</label>
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Gender</label>
                       <div className="flex items-center gap-6 bg-gray-50 px-6 py-4">
                         <label className="inline-flex items-center cursor-pointer">
-                          <input type="radio" name="gender" value="Male" checked={formData.gender === "Male"} onChange={handleChange} className="accent-[#cc5500] w-4 h-4" />
-                          <span className="ml-2 text-[12px] font-bold text-[#001011]">Male</span>
+                          <input type="radio" name="gender" value="Male" checked={formData.gender === "Male"} onChange={handleChange} className="accent-[#cc5500] w-5 h-5" />
+                          <span className="ml-2 text-lg font-bold text-[#001011]">Male</span>
                         </label>
                         <label className="inline-flex items-center cursor-pointer">
-                          <input type="radio" name="gender" value="Female" checked={formData.gender === "Female"} onChange={handleChange} className="accent-[#cc5500] w-4 h-4" />
-                          <span className="ml-2 text-[12px] font-bold text-[#001011]">Female</span>
+                          <input type="radio" name="gender" value="Female" checked={formData.gender === "Female"} onChange={handleChange} className="accent-[#cc5500] w-5 h-5" />
+                          <span className="ml-2 text-lg font-bold text-[#001011]">Female</span>
                         </label>
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[10px] font-black uppercase tracking-widest">Student Photo</label>
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Student Photo</label>
                       <div
                         className="bg-gray-50 px-6 py-4 flex items-center gap-4 cursor-pointer hover:bg-gray-100 transition-colors"
                         onClick={() => fileInputRef.current.click()}
@@ -307,9 +318,9 @@ export default function ApplyPage() {
                           </div>
                         )}
                         <div>
-                          <p className="text-[11px] font-bold text-[#001011]">{photoFile ? photoFile.name : "Click to upload"}</p>
-                          <p className="text-[10px] text-gray-400">600×600px, max 1MB</p>
-                          {photoError && <p className="text-[10px] text-red-500 font-bold mt-1">{photoError}</p>}
+                          <p className="text-lg font-bold text-[#001011]">{photoFile ? photoFile.name : "Click to upload"}</p>
+                          <p className="text-base text-gray-400">600×600px, max 1MB</p>
+                          {photoError && <p className="text-base text-red-500 font-bold mt-1">{photoError}</p>}
                         </div>
                       </div>
                       <input
@@ -326,21 +337,21 @@ export default function ApplyPage() {
                 {step === 2 && (
                   <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Present Address</label>
-                      <textarea required name="presentAddress" value={formData.presentAddress} onChange={handleChange} rows="3" className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none resize-none" placeholder="Enter present address" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Present Address</label>
+                      <textarea required name="presentAddress" value={formData.presentAddress} onChange={handleChange} rows="3" className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none resize-none" placeholder="Enter present address" />
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Permanent Address</label>
-                      <textarea required name="permanentAddress" value={formData.permanentAddress} onChange={handleChange} rows="3" className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none resize-none" placeholder="Enter permanent address" />
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Permanent Address</label>
+                      <textarea required name="permanentAddress" value={formData.permanentAddress} onChange={handleChange} rows="3" className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none resize-none" placeholder="Enter permanent address" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Phone Number</label>
-                        <input required type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="+234..." />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Phone Number</label>
+                        <input required type="tel" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="+234..." />
                       </div>
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Email Address</label>
-                        <input required type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="email@example.com" />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Email Address</label>
+                        <input required type="email" name="emailAddress" value={formData.emailAddress} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="email@example.com" />
                       </div>
                     </div>
                   </div>
@@ -350,34 +361,34 @@ export default function ApplyPage() {
                   <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Religion</label>
-                        <input required type="text" name="religion" value={formData.religion} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter religion" />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Religion</label>
+                        <input required type="text" name="religion" value={formData.religion} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter religion" />
                       </div>
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Nationality</label>
-                        <input required type="text" name="nationality" value={formData.nationality} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter nationality" />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Nationality</label>
+                        <input required type="text" name="nationality" value={formData.nationality} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter nationality" />
                       </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">NIN Number</label>
-                        <input required type="text" name="ninNumber" value={formData.ninNumber} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter NIN number" />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">NIN Number</label>
+                        <input required type="text" name="ninNumber" value={formData.ninNumber} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="Enter NIN number" />
                       </div>
                       <div className="space-y-4">
-                        <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Blood Group</label>
-                        <input required type="text" name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-[12px] focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="e.g. O+, A-, AB+" />
+                        <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Blood Group</label>
+                        <input required type="text" name="bloodGroup" value={formData.bloodGroup} onChange={handleChange} className="w-full bg-gray-50 border-none px-6 py-4 text-[#001011] placeholder-gray-300 text-lg focus:ring-2 focus:ring-[#cc5500]/20 transition-all outline-none" placeholder="e.g. O+, A-, AB+" />
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <label className="block text-[#001011] text-[12px] font-black uppercase tracking-widest">Status</label>
+                      <label className="block text-[#001011] text-base font-black uppercase tracking-widest">Status</label>
                       <div className="flex items-center gap-6 bg-gray-50 px-6 py-4">
                         <label className="inline-flex items-center cursor-pointer">
-                          <input type="radio" name="status" value="Single" checked={formData.status === "Single"} onChange={handleChange} className="accent-[#cc5500] w-4 h-4" />
-                          <span className="ml-2 text-[12px] font-bold text-[#001011]">Single</span>
+                          <input type="radio" name="status" value="Single" checked={formData.status === "Single"} onChange={handleChange} className="accent-[#cc5500] w-5 h-5" />
+                          <span className="ml-2 text-lg font-bold text-[#001011]">Single</span>
                         </label>
                         <label className="inline-flex items-center cursor-pointer">
-                          <input type="radio" name="status" value="Married" checked={formData.status === "Married"} onChange={handleChange} className="accent-[#cc5500] w-4 h-4" />
-                          <span className="ml-2 text-[12px] font-bold text-[#001011]">Married</span>
+                          <input type="radio" name="status" value="Married" checked={formData.status === "Married"} onChange={handleChange} className="accent-[#cc5500] w-5 h-5" />
+                          <span className="ml-2 text-lg font-bold text-[#001011]">Married</span>
                         </label>
                       </div>
                     </div>
@@ -420,7 +431,7 @@ export default function ApplyPage() {
               </div>
 
               {step === 3 && (
-                <p className="mt-8 text-center text-gray-400 text-[12px] tracking-tight italic">
+                <p className="mt-8 text-center text-gray-400 text-base tracking-tight italic">
                   By clicking submit, you agree to St. Mary Children School&apos;s data privacy policy and terms of admission.
                 </p>
               )}

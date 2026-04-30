@@ -158,7 +158,7 @@ export default function StudentRegister() {
               <span className="text-3xl">✅</span>
             </div>
             <h2 className="text-2xl font-black text-gray-800 mb-3">Account Created!</h2>
-            <p className="text-gray-600 text-sm mb-10 leading-relaxed font-medium">
+            <p className="text-gray-600 text-base mb-10 leading-relaxed font-medium">
               Your student profile has been set up successfully. You can now log in to access your portal.
             </p>
             <button
@@ -182,8 +182,8 @@ export default function StudentRegister() {
         </div>
 
         <div className="bg-white border border-gray-100 rounded-[2rem] p-8 md:p-10 shadow-sm">
-          <h1 className="text-2xl font-black text-gray-800 mb-2">Register</h1>
-          <p className="text-gray-500 text-sm mb-8">Create your student account below.</p>
+          <h1 className="text-2xl font-black text-gray-800 mb-2 text-center">Register</h1>
+          <p className="text-gray-500 text-base mb-8 text-center">Create your student account below.</p>
 
           <div className="space-y-5">
 
@@ -194,7 +194,7 @@ export default function StudentRegister() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="e.g. John Doe"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-sm shadow-sm"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-lg shadow-sm"
               />
             </Field>
 
@@ -205,7 +205,7 @@ export default function StudentRegister() {
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 placeholder="e.g. SMCS0001"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-sm shadow-sm font-mono"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-lg shadow-sm font-mono"
               />
             </Field>
 
@@ -214,7 +214,7 @@ export default function StudentRegister() {
               <select
                 value={classId}
                 onChange={(e) => setClassId(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-sm shadow-sm"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-lg shadow-sm"
               >
                 <option value="">Select your class</option>
                 {[
@@ -233,13 +233,13 @@ export default function StudentRegister() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. john@example.com"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-sm shadow-sm"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 transition-all text-lg shadow-sm"
               />
             </Field>
 
             {/* Password */}
             <div>
-              <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2">
+              <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2">
                 Password
               </label>
               <div className="relative">
@@ -249,7 +249,7 @@ export default function StudentRegister() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 8 chars, letter + number"
                   className={`w-full bg-gray-50 border rounded-xl px-4 py-3.5 pr-12 text-gray-800 placeholder-gray-400 
-                    focus:outline-none focus:ring-1 transition-all text-sm shadow-sm
+                    focus:outline-none focus:ring-1 transition-all text-lg shadow-sm
                     ${password && pwdError
                       ? "border-red-300 focus:border-red-400 focus:ring-red-400"
                       : "border-gray-200 focus:border-indigo-400 focus:ring-indigo-400"}`}
@@ -264,7 +264,7 @@ export default function StudentRegister() {
 
             {/* Confirm Password */}
             <div>
-              <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2">
+              <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2">
                 Confirm Password
               </label>
               <div className="relative">
@@ -274,7 +274,7 @@ export default function StudentRegister() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"
                   className={`w-full bg-gray-50 border rounded-xl px-4 py-3.5 pr-12 text-gray-800 placeholder-gray-400 
-                    focus:outline-none focus:ring-1 transition-all text-sm shadow-sm
+                    focus:outline-none focus:ring-1 transition-all text-lg shadow-sm
                     ${confirmError
                       ? "border-red-300 focus:border-red-400 focus:ring-red-400"
                       : "border-gray-200 focus:border-indigo-400 focus:ring-indigo-400"}`}
@@ -307,7 +307,7 @@ export default function StudentRegister() {
             {loading ? <><Spinner /> Registering…</> : "Create Account →"}
           </button>
 
-          <p className="text-center text-gray-500 text-sm mt-8">
+          <p className="text-center text-gray-500 text-base mt-8">
             Already registered?{" "}
             <Link href="/smcs/student/login" className="text-indigo-600 hover:underline font-bold">
               Log In
@@ -317,7 +317,7 @@ export default function StudentRegister() {
 
         <p
           onClick={() => router.push("/")}
-          className="text-center text-gray-400 text-xs font-bold uppercase tracking-widest mt-8
+          className="text-center text-gray-400 text-base font-bold uppercase tracking-widest mt-8
             cursor-pointer hover:text-indigo-600 transition-colors underline-offset-4 hover:underline"
         >
           ← Back to Home
@@ -347,7 +347,7 @@ function LogoHeader() {
 function Field({ label, children }) {
   return (
     <div>
-      <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2">
+      <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2">
         {label}
       </label>
       {children}

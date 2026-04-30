@@ -1,34 +1,21 @@
 "use client";
-import React, { useState } from 'react';
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { useForm, ValidationError } from '@formspree/react';
 
 const ContactUsPage = () => {
-  const [formData, setFormData] = useState({
-    parentName: '',
-    phone: '',
-    childClass: '',
-    childName: '',
-    comment: ''
-  });
+  const [state, handleSubmit] = useForm("xnjwagjy");
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Logic for backend integration goes here
-    console.log('Form Submitted:', formData);
-    alert('Thank you! Your message has been received.');
-    setFormData({
-      parentName: '',
-      phone: '',
-      childClass: '',
-      childName: '',
-      comment: ''
-    });
-  };
+  useEffect(() => {
+    if (state.succeeded) {
+      setShowSuccess(true);
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 7000);
+      return () => clearTimeout(timer);
+    }
+  }, [state.succeeded]);
 
   return (
     <div className="flex flex-col md:flex-row min-h-[90vh] font-[var(--inter-font)] relative z-10 bg-white">
@@ -45,81 +32,109 @@ const ContactUsPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Name</label>
+            <label htmlFor="parentName" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Name</label>
             <input
               required
+              id="parentName"
               type="text"
               name="parentName"
-              value={formData.parentName}
               placeholder="Your full name"
               className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
-              onChange={handleChange}
             />
+            <ValidationError prefix="Name" field="parentName" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Phone</label>
+            <label htmlFor="email" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</label>
             <input
               required
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Your email address"
+              className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
+            />
+            <ValidationError prefix="Email" field="email" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
+          </div>
+
+          <div>
+            <label htmlFor="phone" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Phone</label>
+            <input
+              required
+              id="phone"
               type="tel"
               name="phone"
-              value={formData.phone}
               placeholder="Your phone number"
               className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
-              onChange={handleChange}
             />
+            <ValidationError prefix="Phone" field="phone" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Class</label>
+              <label htmlFor="childClass" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Class</label>
               <input
+                id="childClass"
                 type="text"
                 name="childClass"
-                value={formData.childClass}
                 placeholder="e.g. Primary 3"
                 className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
-                onChange={handleChange}
               />
+              <ValidationError prefix="Class" field="childClass" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Name</label>
+              <label htmlFor="childName" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Child's Name</label>
               <input
+                id="childName"
                 type="text"
                 name="childName"
-                value={formData.childName}
                 placeholder="Your child's name"
                 className="w-full border-b border-slate-200 py-3 focus:outline-none focus:border-[#cc5500] transition-colors text-[#001011] text-base"
-                onChange={handleChange}
               />
+              <ValidationError prefix="Child Name" field="childName" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Comment / Complaint</label>
+            <label htmlFor="comment" className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Comment / Complaint</label>
             <textarea
               required
+              id="comment"
               name="comment"
-              value={formData.comment}
               placeholder="Write your comment or complaint here..."
               rows="4"
               className="w-full bg-slate-50 border-none rounded-xl p-6 mt-2 focus:outline-none focus:ring-2 focus:ring-[#cc5500]/20 transition-all text-[#001011] text-base resize-none"
-              onChange={handleChange}
             ></textarea>
+            <ValidationError prefix="Message" field="comment" errors={state.errors} className="text-red-500 text-xs mt-1 font-bold" />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-[#cc5500] to-[#ff8c00] hover:from-[#b34a00] hover:to-[#cc5500] text-white font-black py-5 rounded-sm uppercase tracking-widest text-sm transition-all shadow-[0_15px_40px_rgba(204,85,0,0.3)] active:scale-95 flex items-center justify-center gap-3"
-          >
-            Submit Message
-          </button>
+          <div className="space-y-4">
+            <button
+              type="submit"
+              disabled={state.submitting}
+              className="w-full bg-gradient-to-r from-[#cc5500] to-[#ff8c00] hover:from-[#b34a00] hover:to-[#cc5500] text-white font-black py-5 rounded-sm uppercase tracking-widest text-sm transition-all shadow-[0_15px_40px_rgba(204,85,0,0.3)] active:scale-95 flex items-center justify-center gap-3 disabled:opacity-70"
+            >
+              {state.submitting ? (
+                <>
+                  <FaSpinner className="animate-spin" /> Processing...
+                </>
+              ) : (
+                "Submit Message"
+              )}
+            </button>
+
+            {showSuccess && (
+              <div className="flex items-center justify-center gap-2 text-green-600 font-bold bg-green-50 py-3 rounded-xl border border-green-100 animate-in fade-in slide-in-from-top-2">
+                <FaCheckCircle />
+                <span>Message sent successfully!</span>
+              </div>
+            )}
+          </div>
         </form>
       </div>
 
       {/* Right Section: Contact Info */}
       <div className="w-full md:w-2/5 bg-[#000000] p-8 md:p-20 text-white flex flex-col justify-center relative overflow-hidden group">
-        {/* Abstract shapes from brand theme */}
         <div className="absolute top-[-10%] right-[-10%] w-[20rem] h-[20rem] bg-[#000000] rounded-full mix-blend-screen filter blur-[80px] pointer-events-none transition-transform duration-1000 group-hover:scale-150"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[15rem] h-[15rem] bg-[#000000] rounded-full mix-blend-screen filter blur-[60px] pointer-events-none transition-transform duration-1000 group-hover:scale-150"></div>
 
@@ -159,7 +174,6 @@ const ContactUsPage = () => {
             </div>
           </div>
 
-          {/* WhatsApp Action */}
           <div className="mt-16 pt-10 border-t border-white/10">
             <button className="flex items-center gap-4 px-6 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-500 hover:text-white transition-all font-bold uppercase tracking-widest text-[10px]">
               <FaWhatsapp className="text-2xl" />
@@ -173,3 +187,4 @@ const ContactUsPage = () => {
 };
 
 export default ContactUsPage;
+

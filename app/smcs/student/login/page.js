@@ -124,7 +124,7 @@ export default function StudentLogin() {
             <>
               <button
                 onClick={() => { setForgotMode(false); setForgotSuccess(false); setForgotError(""); setForgotEmail(""); }}
-                className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-6 hover:text-gray-600 transition-colors flex items-center gap-1"
+                className="text-gray-400 text-base font-bold uppercase tracking-wider mb-6 hover:text-gray-600 transition-colors flex items-center gap-1"
               >
                 ← Back to Login
               </button>
@@ -140,7 +140,7 @@ export default function StudentLogin() {
                     <span className="font-bold text-indigo-600">{forgotEmail}</span>.
                     Click the link to set a new password.
                   </p>
-                  <p className="text-gray-400 text-xs mt-3">Didn't get it? Check spam or try again.</p>
+                  <p className="text-gray-400 text-base mt-3">Didn't get it? Check spam or try again.</p>
                   <button
                     onClick={() => setForgotSuccess(false)}
                     className="mt-6 text-indigo-600 text-sm font-bold hover:underline"
@@ -150,14 +150,14 @@ export default function StudentLogin() {
                 </div>
               ) : (
                 <>
-                  <h1 className="text-2xl font-black text-gray-800 mb-2">Forgot Password?</h1>
-                  <p className="text-gray-500 text-sm mb-8">
+                  <h1 className="text-2xl font-black text-gray-800 mb-2 text-center">Forgot Password?</h1>
+                  <p className="text-gray-500 text-base mb-8 text-center">
                     Enter the email you registered with and we'll send a reset link.
                   </p>
 
                   <form onSubmit={handleForgotPassword} className="space-y-5">
                     <div>
-                      <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2">
+                      <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2">
                         Email Address
                       </label>
                       <input
@@ -168,7 +168,7 @@ export default function StudentLogin() {
                         required
                         className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800
                           placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1
-                          focus:ring-indigo-400 transition-all text-sm shadow-sm"
+                          focus:ring-indigo-400 transition-all text-lg shadow-sm"
                       />
                     </div>
 
@@ -194,14 +194,14 @@ export default function StudentLogin() {
           ) : (
             /* ── LOGIN MODE ── */
             <>
-              <h1 className="text-2xl font-black text-gray-800 mb-2">Welcome Back</h1>
-              <p className="text-gray-500 text-sm mb-8">Log in to access your student portal.</p>
+              <h1 className="text-2xl font-black text-gray-800 mb-2 text-center">Welcome Back</h1>
+              <p className="text-gray-500 text-base mb-8 text-center">Log in to access your student portal.</p>
 
               <form onSubmit={handleLogin} className="space-y-5">
 
                 {/* Student ID */}
                 <div>
-                  <label className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-2">
+                  <label className="text-gray-500 text-base font-bold uppercase tracking-wider block mb-2">
                     Student ID
                   </label>
                   <input
@@ -212,20 +212,20 @@ export default function StudentLogin() {
                     required
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 text-gray-800
                       placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1
-                      focus:ring-indigo-400 transition-all text-sm font-mono shadow-sm"
+                      focus:ring-indigo-400 transition-all text-lg font-mono shadow-sm"
                   />
                 </div>
 
                 {/* Password */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-gray-500 text-xs font-bold uppercase tracking-wider">
+                    <label className="text-gray-500 text-base font-bold uppercase tracking-wider">
                       Password
                     </label>
                     <button
                       type="button"
                       onClick={() => setForgotMode(true)}
-                      className="text-indigo-500 text-xs font-bold hover:text-indigo-700 transition-colors hover:underline"
+                      className="text-indigo-500 text-base font-bold hover:text-indigo-700 transition-colors hover:underline"
                     >
                       Forgot password?
                     </button>
@@ -239,7 +239,7 @@ export default function StudentLogin() {
                       required
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 pr-12 text-gray-800
                         placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-1
-                        focus:ring-indigo-400 transition-all text-sm shadow-sm"
+                        focus:ring-indigo-400 transition-all text-lg shadow-sm"
                     />
                     <button
                       type="button"
@@ -269,7 +269,7 @@ export default function StudentLogin() {
                 </button>
               </form>
 
-              <p className="text-center text-gray-500 text-sm mt-8">
+              <p className="text-center text-gray-500 text-base mt-8">
                 New student?{" "}
                 <Link href="/smcs/student/register" className="text-indigo-600 hover:underline font-bold">
                   Register here
@@ -281,7 +281,7 @@ export default function StudentLogin() {
 
         <p
           onClick={() => router.push("/")}
-          className="text-center text-gray-400 text-xs font-bold uppercase tracking-widest mt-8
+          className="text-center text-gray-400 text-base font-bold uppercase tracking-widest mt-8
             cursor-pointer hover:text-indigo-600 transition-colors"
         >
           ← Back to home

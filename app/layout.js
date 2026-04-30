@@ -15,8 +15,8 @@ const inter = localFont({
 });
 
 export const metadata = {
-  title: "St Mary Educational Center",
-  description: "Education",
+  title: "St. Mary Children School",
+  description: "Experience a world-class education designed to unlock potential, foster leadership, and inspire academic excellence in every child.",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
